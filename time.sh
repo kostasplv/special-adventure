@@ -12,4 +12,10 @@ echo ok medium_static
 time ./ngrams -i medium/medium_dynamic/medium_dynamic.init -q medium/medium_dynamic/medium_dynamic.work >medium_dynamic_result.txt
 diff medium/medium_dynamic/medium_dynamic.result medium_dynamic_result.txt
 echo ok medium_dynamic
+time ./ngrams -i large/large_static/large_static.init -q large/large_static/large_static.work >large_static_result.txt
+diff large/large_static/large_static.result large_static_result.txt
+echo ok large_static
+time ./ngrams -i large/large_dynamic/large_dynamic.init -q large/large_dynamic/large_dynamic.work >large_dynamic_result.txt
+diff large/large_dynamic/large_dynamic.result large_dynamic_result.txt
+echo ok large_dynamic
 
