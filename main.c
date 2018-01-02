@@ -5,7 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include "Job_Scheduler.h"
-#define thread_number 1
+#define thread_number 4
 int main(int argc, char *argv[])
 {
 	int i;
@@ -166,7 +166,12 @@ int main(int argc, char *argv[])
             	phrase1=strtok_r(phrase," ",&phrase1_progress);
             	phrase1=strtok_r(NULL,"",&phrase1_progress);
             	int phrase1len;
-            	phrase1len=strlen(phrase1);
+            	/*if(phrase1==NULL)
+            	{
+                    printf("its true\n");
+                    getchar();
+            	}*/
+            	//phrase1len=strlen(phrase1);
             	counter1++;
             	//memmove(phrase, phrase+2, strlen(phrase));
                 //printf("i am here\n");
@@ -183,9 +188,17 @@ int main(int argc, char *argv[])
                 sprintf(job->job_name,"QD");
                 if(job->job_work==NULL)
                 {
-                    job->job_work=malloc(phrase1len+1);
-                    strcpy(job->job_work,phrase1);
+                    if(phrase1==NULL)
+                    {
+                        job->job_work=NULL;
+                    }
+                    else
+                    {
+                        job->job_work=malloc(strlen(phrase1)+1);
+                        strcpy(job->job_work,phrase1);
+                    }
                 }
+                //printf("past\n");
                 submit_job(sch,job,question_counter,current_version);
                 question_counter=question_counter+1;
             }
@@ -214,6 +227,8 @@ int main(int argc, char *argv[])
                     free(buffer[k]);
             	}
                 free(buffer);
+            	merge_everything(hk,thread_number);
+                findk(hk[0],phrase1);
                 question_counter=0;
             }
             else if(phrase[0]=='D')
