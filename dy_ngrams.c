@@ -576,6 +576,10 @@ int delete_ngram(Index* indx,char *phrase,int current_version)// DAIGRADFEI ENA 
                     if(indx->root[found].child_num==0)//AN DEN EXEI PAIDIA TOTE TON DIAGRAFOYME
                     {
                         indx->root[found].d_version=current_version;
+                    }
+                    if(indx->root[found].child_num==0)//AN DEN EXEI PAIDIA TOTE TON DIAGRAFOYME
+                    {
+						indx->root[found].d_version=current_version;
                     	/*if(indx->root[found].word_flag==1)
                     	{
                             free(indx->root[found].word);
