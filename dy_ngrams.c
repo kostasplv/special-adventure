@@ -31,6 +31,7 @@ hash_trie* init_hash_trie()//initialization of hash_trie
     temp->round=10;
     temp->bucket=malloc(temp->bucket_num*sizeof(Index *));
     int i;
+
     i=0;
     for(i=0;i<temp->bucket_num;i++)
         temp->bucket[i]=init_trie();//initializion for every bucket

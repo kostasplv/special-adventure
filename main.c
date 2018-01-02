@@ -230,6 +230,7 @@ int main(int argc, char *argv[])
             	merge_everything(hk,thread_number);
                 findk(hk[0],phrase1);
                 question_counter=0;
+                //delete_threads(sch);
             }
             else if(phrase[0]=='D')
             {
@@ -396,6 +397,7 @@ int main(int argc, char *argv[])
         	if(fscanf(query_f,"%[^\n]",c)!=1)
         	{
         		//printf("axi allo");
+        		free(job);
         		break;
         	}
 
@@ -439,20 +441,11 @@ int main(int argc, char *argv[])
 				//printf("c=%s\n",c);
                 //sch->buf_counter=0;
                 char **buffer;
-				//submit_job(sch,job,question_counter);
 				buffer=malloc(question_counter*sizeof(char *));
 		        execute_all_jobs(sch,Trie,hk,counter,buffer);
-		        //printf("i am here4.1\n");
 		        counter=0;
-		        //printf("i am here4.2\n");
 		        wait_all_tasks_finish(sch);
-                //printf("i am here4.3\n");
 		        reset_queue(sch->q);
-		        //printf("i am here5\n");
-		        //printf("AFTER WAIT ALL TASKS knbfiopnbviodhnebioednbihenbioernbpriobn\n");
-               // free(job->job_work);
-                //job->job_work=NULL;
-            	//getchar();
             	int k;
             	k=0;
             	for(k=0;k<question_counter;k++)
@@ -463,63 +456,16 @@ int main(int argc, char *argv[])
             	{
                     free(buffer[k]);
             	}
-            	//printf("question_counter %d\n",question_counter);
             	question_counter=0;
             	free(buffer);
             	memmove(c, c+2, strlen(c));
-            	//printf("c %s\n",c);
             	merge_everything(hk,thread_number);
                 findk(hk[0],c);
-            	//findk(hk,c);
+                //delete_threads(sch);
             }
-    		//free(job->job_work);
             fgetc(query_f);
-         //   printjobs(sch);
-
-        	//getchar();
-
-           /* if(fscanf(query_f,"%s",c)!=1)
-			{
-				break;
-			}
-            if(!strcmp(c,"F"))
-            {
-				fpos_t position1;
-				fgetpos (query_f, &position1);
-				if(fscanf(query_f,"%s",c)!=1)
-					break;
-				else
-				{
-					if(!strcmp(c,"Q") || !strcmp(c,"") || !strcmp(c,"F"))
-					{
-						fsetpos(query_f,&position1);
-						findk(hk,NULL);
-					}
-					else
-						findk(hk,c);
-				}
-            }
-            else if(!strcmp(c,"Q")) //entoli gia anazitisi ngrams se dosmeni frasi
-            {
-                char* result;
-                result=static_search(Trie,query_f,hk);
-                printf("%s",result);
-                printf("\n");
-                if(strcmp(result,"-1"))
-                {
-                	free(result);
-                	result=NULL;
-                }
-            }
-            else
-            {
-                printf("invalid command\n");
-            }*/
             free(job);
         }
-       // execute_all_jobs(sch,Trie,hk);
-       // wait_all_tasks_finish(sch);
-
         free(choice);
         fclose(init_f);
         fclose(query_f);

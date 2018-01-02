@@ -161,12 +161,14 @@ void st_delete_hash(hash_trie **ht)
 }
 void st_delete_trie(Index **indx)
 {
-    int i;
+    int i,j;
     for(i=0;i<(*indx)->root_num;i++)
     {
         st_delete_helper(&((*indx)->root[i]));
         free((*indx)->root[i].array);
         (*indx)->root[i].array=NULL;
+        free((*indx)->root[i].fores);
+        (*indx)->root[i].fores=NULL;
         if((*indx)->root[i].word_flag==1)
         {
         	free((*indx)->root[i].word);
@@ -174,7 +176,11 @@ void st_delete_trie(Index **indx)
         }
         free((*indx)->root[i].children);
         (*indx)->root[i].children=NULL;
+
     }
+
+
+
     free((*indx)->root);
     (*indx)->root=NULL;
     free((*indx));
@@ -189,6 +195,8 @@ void st_delete_helper(trie_node *node)
         st_delete_helper(node->children[i]);
         free(node->children[i]->array);
         node->children[i]->array=NULL;
+        free(node->children[i]->fores);
+        node->children[i]->fores=NULL;
         if(node->children[i]->word_flag==1)
         {
         	 free(node->children[i]->word);

@@ -55,4 +55,5 @@ void wait_all_tasks_finish(Job_Scheduler* schedule);
 void destroy_scheduler(Job_Scheduler* schedule);
 void reset_queue(Queue *);
 void execute_job(thread_param *,int);
+void delete_threads();
 #endif /* JOB_SCHEDULER_H_ */

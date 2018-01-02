@@ -167,13 +167,11 @@ Job_Scheduler* initialize_scheduler(int execution_threads)
 	queue->size=100;
 	queue->jobs=malloc(queue->size*sizeof(Job));
 	mutex=malloc(queue->size*sizeof(pthread_mutex_t));
-	read_cond=malloc(queue->size*sizeof(pthread_cond_t));
 	int j;
 	for(j=0;j<queue->size;j++)
 	{
 		pthread_mutex_init(&(mutex[j]),NULL);
 		//pthread_mutex_init(&(read_mutex[i]),NULL);
-		pthread_cond_init (&(read_cond[j]), NULL);
 	}
 
 	for(j=0;j<queue->size;j++)
@@ -193,17 +191,6 @@ Job_Scheduler* initialize_scheduler(int execution_threads)
 void submit_job(Job_Scheduler* schedule,Job* j,int id,int current_version)
 {
 	int i;
-	/*printf("ID =%d \nsize=%d\n",id,schedule->q->size);
-	printf("start=%d\nend=%d\n",schedule->q->start,schedule->q->end);
-	if(schedule->q->size<=id)
-	{
-		schedule->q->jobs=realloc(schedule->q->jobs,((schedule->q->size)*2)*sizeof(Job));
-		for(i=schedule->q->size;i<(schedule->q->size*2);i++)
-			strcpy(schedule->q->jobs[i].job_name,"-1");
-		schedule->q->size*=2;
-
-		//printjobs(schedule);
-	}*/
     if(schedule->q->end==schedule->q->size)
     {
         //printf("i am here\n");
@@ -215,12 +202,10 @@ void submit_job(Job_Scheduler* schedule,Job* j,int id,int current_version)
             strcpy(schedule->q->jobs[j].job_name,"-1");
         }
         mutex=realloc(mutex,schedule->q->size*sizeof(pthread_mutex_t));
-        read_cond=realloc(read_cond,schedule->q->size*sizeof(pthread_cond_t));
         for(j=schedule->q->end;j<schedule->q->size;j++)
         {
             pthread_mutex_init(&(mutex[j]),NULL);
             //pthread_mutex_init(&(read_mutex[i]),NULL);
-            pthread_cond_init (&(read_cond[j]), NULL);
         }
         //printf("i am here1\n");
         //getchar();
@@ -238,38 +223,8 @@ void submit_job(Job_Scheduler* schedule,Job* j,int id,int current_version)
         schedule->q->jobs[schedule->q->end].job_fun_dy=new_search;
         schedule->q->jobs[schedule->q->end].current_version=current_version;
     }
-    /*int i;*/
-    //for(i=0;i<schedule->execution_threads;i++)
-    //pthread_mutex_lock(&mutex[schedule->q->end]);
-
-    //pthread_cond_signal(&(read_cond[schedule->q->end]));
     schedule->q->end=schedule->q->end+1;
-    //printf("i am here3\n");
-    //pthread_mutex_unlock(&mutex[schedule->q->end-1]);
-	/*if(!strcmp(schedule->q->jobs[schedule->q->end].job_name,"-1"))
-	{
-		schedule->q->jobs[schedule->q->end]=*j;
-		schedule->q->jobs[schedule->q->end].id=id;
-        if(!strcmp(schedule->q->jobs[schedule->q->end].job_name,"QS"))
-        {
-            schedule->q->jobs[schedule->q->end].job_fun_st=static_search;
-            schedule->q->jobs[schedule->q->end].job_fun_dy=NULL;
-        }
-        if(!strcmp(schedule->q->jobs[schedule->q->end].job_name,"QD"))
-        {
-            schedule->q->jobs[schedule->q->end].job_fun_st=NULL;
-            schedule->q->jobs[schedule->q->end].job_fun_dy=new_search;
-        }
-		int i;
-		//for(i=0;i<schedule->execution_threads;i++)
-		//pthread_mutex_lock(&mutex[schedule->q->end]);
 
-		//pthread_cond_signal(&(read_cond[schedule->q->end]));
-		schedule->q->end=schedule->q->end+1;
-		//pthread_mutex_unlock(&mutex[schedule->q->end-1]);
-
-
-	}*/
 }
 void execute_all_jobs(Job_Scheduler* schedule,hash_trie* indx,hash_keeper** hk,int counter,char **buf_res)
 {
@@ -278,7 +233,6 @@ void execute_all_jobs(Job_Scheduler* schedule,hash_trie* indx,hash_keeper** hk,i
 	void *Worker(void*) ;
 	thread_param *temp;
 	temp=malloc(schedule->execution_threads*sizeof(thread_param));
-	buffer=malloc(schedule->q->size*sizeof(char*));
 	//printjobs(schedule);
 	//schedule->q->size=counter;
 	//schedule->q->jobs=malloc(schedule->q->size*sizeof(Job));
@@ -296,6 +250,7 @@ void execute_all_jobs(Job_Scheduler* schedule,hash_trie* indx,hash_keeper** hk,i
 			exit (1) ;
 		}
 	}
+	//free(temp);
 
 }
 void printjobs(Job_Scheduler* schedule)
@@ -344,5 +299,17 @@ void reset_queue(Queue *q)
 	q->start=0;
 	q->end=0;
 	id_counter=0;
+}
+void delete_threads(Job_Scheduler* schedule)
+{
+	free(schedule->tids);
+	free(schedule->q->jobs);
+	int i;
+	for(i=0;i<schedule->q->size;i++)
+	{
+		pthread_mutex_destroy(&mutex[i]);
+	}
+	pthread_mutex_destroy(mutex);
+	pthread_mutex_destroy(&start_mutex);
 }
 
