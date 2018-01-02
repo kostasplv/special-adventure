@@ -5,7 +5,7 @@
 #include "st_ngrams.h"
 #define VECTOR_SIZE 5000
 #define HASH_NUMBER 10
-#define thread_number 20
+#define thread_number 4
 void compress_hash(hash_trie *ht)
 {
     int i;

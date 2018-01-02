@@ -5,7 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include "Job_Scheduler.h"
-#define thread_number 20
+#define thread_number 4
 int main(int argc, char *argv[])
 {
 	int i;
