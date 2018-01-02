@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
         char *command;
         char *parseddata;
         Job_Scheduler* sch=initialize_scheduler(thread_number);
-        int question_counter=0,top_counter=0,counter=0;
+        int question_counter=0,top_counter=0;
         int counter1=0,current_version=0,prev_current_version=-1;
         while(1)
         {
