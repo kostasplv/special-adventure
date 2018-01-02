@@ -214,6 +214,8 @@ int main(int argc, char *argv[])
                     free(buffer[k]);
             	}
                 free(buffer);
+            	merge_everything(hk,thread_number);
+                findk(hk[0],phrase1);
                 question_counter=0;
             }
             else if(phrase[0]=='D')
