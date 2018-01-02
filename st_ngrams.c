@@ -5,7 +5,7 @@
 #include "st_ngrams.h"
 #define VECTOR_SIZE 5000
 #define HASH_NUMBER 10
-#define thread_number 8
+#define thread_number 4
 void compress_hash(hash_trie *ht)
 {
     int i;
@@ -205,14 +205,14 @@ int st_binary_search_root(char *phrase,trie_node *node,int length)
 {
 	 int  first, last, middle;
 	 if(phrase==NULL)return -1;
-	 char temp[100];
+	 char temp[10000];
 	 first = 0;
 	 last = length - 1;
 	 middle = (first+last)/2;
 	 while (first <= last)
 	 {
          //printf("15\n");
-		 memset(temp, 0, 100);
+		 memset(temp, 0, 10000);
 		 //printf("15.1\n");
 		 if(node[first].word_flag==1)
 		 {
@@ -231,7 +231,7 @@ int st_binary_search_root(char *phrase,trie_node *node,int length)
              //printf("15.6\n");
 		 	 return first;
 	 	 }
-		memset(temp, 0, 100);
+		memset(temp, 0, 10000);
 		if(node[last].word_flag==1)
 		{
             //printf("15.7 $$$$$ %d\n",abs(node[last].array[0]));
@@ -250,7 +250,7 @@ int st_binary_search_root(char *phrase,trie_node *node,int length)
 		 	 return last;
 	 	}
 	 	//printf("15.93\n");
-		memset(temp, 0, 100);
+		memset(temp, 0, 10000);
 		//printf("15.94\n");
 		if(node[middle].word_flag==1)
 		{

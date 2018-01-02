@@ -5,7 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include "Job_Scheduler.h"
-#define thread_number 8
+#define thread_number 4
 int main(int argc, char *argv[])
 {
 	int i;
@@ -249,7 +249,7 @@ int main(int argc, char *argv[])
                 }*/
                 if(delete_ngram_hash(Trie,phrase1,current_version)!=1)
                 {
-                    printf("Error in delete\n");
+                    //printf("Error in delete\n");
                 }
             }
             else if(phrase[0]=='A')
