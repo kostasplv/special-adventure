@@ -5,7 +5,7 @@ OUT = ngrams
 IN = main.o bloom_functions.o st_ngrams.o dy_ngrams.o Job_Scheduler.o
 OUT1= exe
 IN1=  dy_ngrams.o bloom_functions.o st_ngrams.o Job_Scheduler.o unit_testing.o 
-files=small_dynamic_result.txt small_static_result.txt medium_static_result.txt medium_dynamic_result.txt
+files=small_dynamic_result.txt small_static_result.txt medium_static_result.txt medium_dynamic_result.txt large_static_result.txt large_dynamic_result.txt
 
 all: main.o bloom_functions.o st_ngrams.o dy_ngrams.o Job_Scheduler.o #unit_testing.o 
 	$(CC) $(COMP) $(OUT) $(IN) -lm -pthread
