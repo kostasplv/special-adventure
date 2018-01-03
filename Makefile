@@ -1,5 +1,5 @@
 CC		= gcc
-FLAGS	= -c -g
+FLAGS	= -c -g -O3
 COMP = -o
 OUT = ngrams
 IN = main.o bloom_functions.o st_ngrams.o dy_ngrams.o Job_Scheduler.o

@@ -851,6 +851,8 @@ char* new_search(hash_trie* ht,char *parseddata,hash_keeper *hk,int current_vers
         }
         else if(first==0)
         {
+            //printf("\n\n%s\n",parseddata);
+            if(parseddata==NULL) break;
             temp=strtok_r(parseddata," ",&parseddataprogress);
             if(temp==NULL) break;
             //temp3=(char *)&parseddataprogress;
