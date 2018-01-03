@@ -136,6 +136,8 @@ void delete_static_node(trie_node** temp,trie_node** parent,int paidia)
 	{
 		free(parent[i]->array);
 		parent[i]->array=NULL;
+		free(parent[i]->fores);
+		parent[i]->fores=NULL;
 		if(parent[i]->word_flag==1)
 		{
 			free(parent[i]->word);

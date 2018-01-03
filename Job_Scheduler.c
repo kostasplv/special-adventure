@@ -226,7 +226,7 @@ void submit_job(Job_Scheduler* schedule,Job* j,int id,int current_version)
     schedule->q->end=schedule->q->end+1;
 
 }
-void execute_all_jobs(Job_Scheduler* schedule,hash_trie* indx,hash_keeper** hk,int counter,char **buf_res)
+thread_param *execute_all_jobs(Job_Scheduler* schedule,hash_trie* indx,hash_keeper** hk,int counter,char **buf_res)
 {
 	int i;
 	int err;
@@ -251,7 +251,7 @@ void execute_all_jobs(Job_Scheduler* schedule,hash_trie* indx,hash_keeper** hk,i
 		}
 	}
 	//free(temp);
-
+    return temp;
 }
 void printjobs(Job_Scheduler* schedule)
 {
@@ -300,15 +300,17 @@ void reset_queue(Queue *q)
 	q->end=0;
 	id_counter=0;
 }
-void delete_threads(Job_Scheduler* schedule)
+void delete_threads(Job_Scheduler** schedule)
 {
-	free(schedule->tids);
-	free(schedule->q->jobs);
+	free((*schedule)->tids);
+	free((*schedule)->q->jobs);
+	free((*schedule)->q);
 	int i;
-	for(i=0;i<schedule->q->size;i++)
+	for(i=0;i<(*schedule)->q->size;i++)
 	{
 		pthread_mutex_destroy(&mutex[i]);
 	}
+	free((*schedule));
 	pthread_mutex_destroy(mutex);
 	pthread_mutex_destroy(&start_mutex);
 }

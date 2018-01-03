@@ -212,7 +212,8 @@ int main(int argc, char *argv[])
                 //findk(hk,phrase1);
                 char **buffer;
                 buffer=malloc(question_counter*sizeof(char *));
-                execute_all_jobs(sch,Trie,hk,counter,buffer);
+                thread_param *temp;
+                temp=execute_all_jobs(sch,Trie,hk,counter,buffer);
                 counter1=0;
                 wait_all_tasks_finish(sch);
                 reset_queue(sch->q);
@@ -230,6 +231,7 @@ int main(int argc, char *argv[])
             	merge_everything(hk,thread_number);
                 findk(hk[0],phrase1);
                 question_counter=0;
+                free(temp);
                 //delete_threads(sch);
             }
             else if(phrase[0]=='D')
@@ -330,6 +332,8 @@ int main(int argc, char *argv[])
         {
             top_hash_rem(&hk[kk]);
         }
+        free(hk);
+        delete_threads(&sch);
     }
     else if(!strcmp("STATIC",choice))
     {
@@ -442,7 +446,8 @@ int main(int argc, char *argv[])
                 //sch->buf_counter=0;
                 char **buffer;
 				buffer=malloc(question_counter*sizeof(char *));
-		        execute_all_jobs(sch,Trie,hk,counter,buffer);
+				thread_param *temp;
+		        temp=execute_all_jobs(sch,Trie,hk,counter,buffer);
 		        counter=0;
 		        wait_all_tasks_finish(sch);
 		        reset_queue(sch->q);
@@ -461,6 +466,7 @@ int main(int argc, char *argv[])
             	memmove(c, c+2, strlen(c));
             	merge_everything(hk,thread_number);
                 findk(hk[0],c);
+                free(temp);
                 //delete_threads(sch);
             }
             fgetc(query_f);
@@ -475,5 +481,7 @@ int main(int argc, char *argv[])
         {
             top_hash_rem(&hk[kk]);
         }
+        free(hk);
+        delete_threads(&sch);
     }
 }

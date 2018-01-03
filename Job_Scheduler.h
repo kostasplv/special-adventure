@@ -50,10 +50,10 @@ void printjobs(Job_Scheduler* schedule);
 Job_Scheduler* initialize_scheduler(int execution_threads);
 void *Worker(void* i);
 void submit_job(Job_Scheduler* schedule,Job* j,int id,int current_version);
-void execute_all_jobs(Job_Scheduler* schedule,hash_trie*,hash_keeper**,int,char**);
+thread_param *execute_all_jobs(Job_Scheduler* schedule,hash_trie*,hash_keeper**,int,char**);
 void wait_all_tasks_finish(Job_Scheduler* schedule);
 void destroy_scheduler(Job_Scheduler* schedule);
 void reset_queue(Queue *);
 void execute_job(thread_param *,int);
-void delete_threads();
+void delete_threads(Job_Scheduler **);
 #endif /* JOB_SCHEDULER_H_ */
