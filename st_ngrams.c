@@ -606,6 +606,7 @@ void static_search_node(trie_node* node,char* fp1,char** subphrase,char* bloom_v
 						(*glob)++;
 	                    insert_hash_topk(hk,*subphrase);
 					}
+
 				}
 				node->fores[id]=0;
 				node=node->children[found];
@@ -658,6 +659,7 @@ void static_search_node(trie_node* node,char* fp1,char** subphrase,char* bloom_v
 						(*glob)++;
 	                    insert_hash_topk(hk,*subphrase);
 					}
+
 				}
 				continue;
 			}

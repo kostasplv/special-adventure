@@ -28,65 +28,46 @@ int clean_suite1(void)
 }
 void test_compress(void)
 {
-	FILE* fp=fopen("unit_testing/test_compress.txt","r");
     hash_trie *Trie;
     Trie=init_hash_trie();
     hash_keeper *hk;
     initialize_hash_topk(&hk);
 	fpos_t position1;
-    char phrase[1000];
+
+    char phrase[1000],phrase1[1000];
+    strcpy(phrase1,"this is a cat and a dog and this is not a balloon");
     strcpy(phrase,"this");
     st_insert_ngram_hash(Trie,phrase);
-    compress_hash(Trie);
     char* result;
-	fgetpos (fp, &position1);
-    result=static_search(Trie,fp,hk);
-	fsetpos(fp,&position1);
-	CU_ASSERT(0==strcmp(result,"this"));
-	free(result);
+
     strcpy(phrase,"this is");
     st_insert_ngram_hash(Trie,phrase);
-	fgetpos (fp, &position1);
-    result=static_search(Trie,fp,hk);
-	fsetpos(fp,&position1);
-	CU_ASSERT(0==strcmp(result,"this|this is"));
-	free(result);
+
     strcpy(phrase,"this is a");
     st_insert_ngram_hash(Trie,phrase);
-	fgetpos (fp, &position1);
-    result=static_search(Trie,fp,hk);
-	fsetpos(fp,&position1);
-	CU_ASSERT(0==strcmp(result,"this|this is|this is a"));
-	free(result);
+
     strcpy(phrase,"this is not");
     st_insert_ngram_hash(Trie,phrase);
-	fgetpos (fp, &position1);
-    result=static_search(Trie,fp,hk);
-	fsetpos(fp,&position1);
-	CU_ASSERT(0==strcmp(result,"this|this is|this is a|this is not"));
-	free(result);
+
     strcpy(phrase,"this is not an");
     st_insert_ngram_hash(Trie,phrase);
-	fgetpos (fp, &position1);
-    result=static_search(Trie,fp,hk);
-	fsetpos(fp,&position1);
-	CU_ASSERT(0==strcmp(result,"this|this is|this is a|this is not"));
-	free(result);
+
     strcpy(phrase,"this is not a");
     st_insert_ngram_hash(Trie,phrase);
-	fgetpos (fp, &position1);
-    result=static_search(Trie,fp,hk);
-	fsetpos(fp,&position1);
-	CU_ASSERT(0==strcmp(result,"this|this is|this is a|this is not|this is not a"));
-	free(result);
+
     strcpy(phrase,"this is not a balloon");
     st_insert_ngram_hash(Trie,phrase);
-	fgetpos (fp, &position1);
-    result=static_search(Trie,fp,hk);
-	fsetpos(fp,&position1);
+
+    compress_hash(Trie);
+    result=static_search(Trie,phrase1,hk,0);
+	CU_ASSERT(0!=strcmp(result,"this"));
+	CU_ASSERT(0!=strcmp(result,"this|this is"));
+	CU_ASSERT(0!=strcmp(result,"this|this is|this is a"));
+	CU_ASSERT(0!=strcmp(result,"this|this is|this is a|this is not"));
+	CU_ASSERT(0!=strcmp(result,"this|this is|this is a|this is not|this is not a"));
 	CU_ASSERT(0==strcmp(result,"this|this is|this is a|this is not|this is not a|this is not a balloon"));
-	fclose(fp);
 	free(result);
+
     st_delete_hash(&Trie);
     top_hash_rem(&hk);
 }
@@ -105,169 +86,140 @@ void test_Static_Search(void)
     hash_keeper *hk;
     initialize_hash_topk(&hk);
     char* temp;
-    char phrase[1000];
+    char phrase[1000],phrase1[1000];
 
-    fp=clear_file_and_write(fp," ");
-	temp=static_search(Trie,fp,hk);
-	CU_ASSERT(0==strcmp(temp,"-1"));
-	fclose(fp);
 
-	fp=clear_file_and_write(fp,"this");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	temp=static_search(Trie,"",hk,0);
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-    fp=clear_file_and_write(fp,"this is");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this");
+	temp=static_search(Trie,phrase,hk,0);
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-    fp=clear_file_and_write(fp,"this");
+	strcpy(phrase1,"this is");
+	temp=static_search(Trie,phrase1,hk,0);
+	CU_ASSERT(0==strcmp(temp,"-1"));
+
 	strcpy(phrase,"this");
     st_insert_ngram_hash(Trie,phrase);
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	temp=static_search(Trie,"this",hk,0);
 	CU_ASSERT(0==strcmp(temp,phrase));
 	free(temp);
-    fp=clear_file_and_write(fp,"this");
+
+	strcpy(phrase1,"this");
 	strcpy(phrase,"this is a ball");
 	st_insert_ngram_hash(Trie,phrase);
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-    fp=clear_file_and_write(fp,"is this");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"is this");
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"ball");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"ball");
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-	fp=clear_file_and_write(fp,"this is");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is");
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a ball");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a ball");
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this|this is a ball"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this");
+	strcpy(phrase1,"this");
 	strcpy(phrase,"this is a dog");
 	st_insert_ngram_hash(Trie,phrase);
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is");
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"ball dog");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"ball dog");
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-	fp=clear_file_and_write(fp,"is this");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"is this");
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a dog");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a dog");
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this|this is a dog"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a ball and this is a dog");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a ball and this is a dog");
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this|this is a ball|this is a dog"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this");
 	strcpy(phrase,"is a dog and");
 	st_insert_ngram_hash(Trie,phrase);
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	temp=static_search(Trie,"this",hk,0);
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"is");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	temp=static_search(Trie,"is",hk,0);
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-	fp=clear_file_and_write(fp,"is a dog");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"is a dog");
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-	fp=clear_file_and_write(fp,"is a dog and");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"is a dog and");
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"is a dog and"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a dog and");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a dog and");
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this|this is a dog|is a dog and"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"is");
 	strcpy(phrase,"is");
 	st_insert_ngram_hash(Trie,phrase);
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	temp=static_search(Trie,"is",hk,0);
 	CU_ASSERT(0==strcmp(temp,"is"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"is a");
+	strcpy(phrase1,"is a");
 	strcpy(phrase,"is a dog");
 	st_insert_ngram_hash(Trie,phrase);
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"is"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a dog and this is a ball");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a dog and this is a ball");
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this|this is a dog|is|is a dog|is a dog and|this is a ball"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"is a");
 	strcpy(phrase,"a");
+	strcpy(phrase1,"is a");
 	st_insert_ngram_hash(Trie,phrase);
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"is|a"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"a");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	temp=static_search(Trie,"a",hk,0);
 	CU_ASSERT(0==strcmp(temp,"a"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a this is a");
-	temp=static_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a this is a");
+	temp=static_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this|is|a"));
 	free(temp);
+
 	st_delete_hash(&Trie);
     top_hash_rem(&hk);
 }
@@ -279,169 +231,140 @@ void test_Dynamic_Search(void)
     hash_keeper *hk;
     initialize_hash_topk(&hk);
     char* temp;
-    char phrase[1000];
+    char phrase[1000],phrase1[1000];
 
-    fp=clear_file_and_write(fp," ");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	temp=new_search(Trie," ",hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-	fp=clear_file_and_write(fp,"this");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+
+	temp=new_search(Trie,"this",hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-    fp=clear_file_and_write(fp,"this is");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is");
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-    fp=clear_file_and_write(fp,"this");
+
 	strcpy(phrase,"this");
-    insert_ngram_hash(Trie,phrase);
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+    insert_ngram_hash(Trie,phrase,0);
+	temp=new_search(Trie,"this",hk,0);
 	CU_ASSERT(0==strcmp(temp,phrase));
 	free(temp);
-    fp=clear_file_and_write(fp,"this");
+
 	strcpy(phrase,"this is a ball");
-	insert_ngram_hash(Trie,phrase);
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	insert_ngram_hash(Trie,phrase,0);
+	temp=new_search(Trie,"this",hk,0);
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-    fp=clear_file_and_write(fp,"is this");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"is this");
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"ball");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	temp=new_search(Trie,"ball",hk,0);
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-	fp=clear_file_and_write(fp,"this is");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is");
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a ball");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a ball");
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this|this is a ball"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this");
 	strcpy(phrase,"this is a dog");
-	insert_ngram_hash(Trie,phrase);
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	insert_ngram_hash(Trie,phrase,0);
+	temp=new_search(Trie,"this",hk,0);
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is");
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"ball dog");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"ball dog");
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-	fp=clear_file_and_write(fp,"is this");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"is this");
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a dog");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a dog");
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this|this is a dog"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a ball and this is a dog");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a ball and this is a dog");
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this|this is a ball|this is a dog"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this");
 	strcpy(phrase,"is a dog and");
-	insert_ngram_hash(Trie,phrase);
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	insert_ngram_hash(Trie,phrase,0);
+	temp=new_search(Trie,"this",hk,0);
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"is");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+
+	temp=new_search(Trie,"is",hk,0);
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-	fp=clear_file_and_write(fp,"is a dog");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"is a dog");
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-	fp=clear_file_and_write(fp,"is a dog and");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"is a dog and");
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"is a dog and"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a dog and");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a dog and");
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this|this is a dog|is a dog and"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"is");
 	strcpy(phrase,"is");
-	insert_ngram_hash(Trie,phrase);
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	insert_ngram_hash(Trie,phrase,0);
+	temp=new_search(Trie,"is",hk,0);
 	CU_ASSERT(0==strcmp(temp,"is"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"is a");
+	strcpy(phrase1,"is a");
 	strcpy(phrase,"is a dog");
-	insert_ngram_hash(Trie,phrase);
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	insert_ngram_hash(Trie,phrase,0);
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"is"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a dog and this is a ball");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a dog and this is a ball");
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this|this is a dog|is|is a dog|is a dog and|this is a ball"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"is a");
+	strcpy(phrase1,"is a");
 	strcpy(phrase,"a");
-	insert_ngram_hash(Trie,phrase);
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	insert_ngram_hash(Trie,phrase,0);
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"is|a"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"a");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	temp=new_search(Trie,"a",hk,0);
 	CU_ASSERT(0==strcmp(temp,"a"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a this is a");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a this is a");
+	temp=new_search(Trie,phrase1,hk,0);
 	CU_ASSERT(0==strcmp(temp,"this|is|a"));
 	free(temp);
+
 	delete_trie_hash(&Trie);
     top_hash_rem(&hk);
 }
@@ -452,85 +375,69 @@ void test_Static_Insert(void)
     Trie=init_hash_trie();
     hash_keeper *hk;
     initialize_hash_topk(&hk);
-    char phrase[1000];
+    char phrase[1000],phrase1[1000];
 
-    	fp=clear_file_and_write(fp,"");
-		char* temp=static_search(Trie,fp,hk);
-		fclose(fp);
+
+		char* temp=static_search(Trie,"",hk,0);
 		CU_ASSERT(0==strcmp(temp,"-1"));
 
-    	fp=clear_file_and_write(fp," ");
-		temp=static_search(Trie,fp,hk);
-		fclose(fp);
+		temp=static_search(Trie," ",hk,0);
 		CU_ASSERT(0==strcmp(temp,"-1"));
 
-    	fp=clear_file_and_write(fp,"this dsad ads");
-		temp=static_search(Trie,fp,hk);
-		fclose(fp);
+		strcpy(phrase1,"this dsad ads");
+		temp=static_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"-1"));
 
-    	fp=clear_file_and_write(fp,"this");
 		strcpy(phrase,"this");
 		st_insert_ngram_hash(Trie,phrase);
-		temp=static_search(Trie,fp,hk);
-		fclose(fp);
+		temp=static_search(Trie,"this",hk,0);
 		CU_ASSERT(0==strcmp(temp,"this"));
 		free(temp);
 
-    	fp=clear_file_and_write(fp,"this is");
+		strcpy(phrase1,"this is");
 		strcpy(phrase,"this is");
 		st_insert_ngram_hash(Trie,phrase);
-		temp=static_search(Trie,fp,hk);
-		fclose(fp);
+		temp=static_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"this|this is"));
 		free(temp);
 
-    	fp=clear_file_and_write(fp,"this is a dog");
+		strcpy(phrase1,"this is a dog");
 		strcpy(phrase,"this is a dog");
 		st_insert_ngram_hash(Trie,phrase);
-		temp=static_search(Trie,fp,hk);
-		fclose(fp);
+		temp=static_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"this|this is|this is a dog"));
 		free(temp);
 
-    	fp=clear_file_and_write(fp,"this is a cat");
-		temp=static_search(Trie,fp,hk);
-		fclose(fp);
+		strcpy(phrase1,"this is a cat");
+		temp=static_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"this|this is"));
 		free(temp);
 
-    	fp=clear_file_and_write(fp,"this is a cat");
+		strcpy(phrase1,"this is a cat");
 		strcpy(phrase,"this is a cat");
 		st_insert_ngram_hash(Trie,phrase);
-		temp=static_search(Trie,fp,hk);
-		fclose(fp);
+		temp=static_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"this|this is|this is a cat"));
 		free(temp);
 
-    	fp=clear_file_and_write(fp,"is");
-		temp=static_search(Trie,fp,hk);
-		fclose(fp);
+		temp=static_search(Trie,"is",hk,0);
 		CU_ASSERT(0==strcmp(temp,"-1"));
 
-    	fp=clear_file_and_write(fp,"is");
 		strcpy(phrase,"is");
 		st_insert_ngram_hash(Trie,phrase);
-		temp=static_search(Trie,fp,hk);
-		fclose(fp);
+		temp=static_search(Trie,"is",hk,0);
 		CU_ASSERT(0==strcmp(temp,"is"));
 		free(temp);
 
-    	fp=clear_file_and_write(fp,"is a cat");
-		temp=static_search(Trie,fp,hk);
-		fclose(fp);
+		strcpy(phrase1,"is a cat");
+		temp=static_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"is"));
 		free(temp);
 
-    	fp=clear_file_and_write(fp,"is a cat");
+		strcpy(phrase1,"is a cat");
 		strcpy(phrase,"is a cat");
 		st_insert_ngram_hash(Trie,phrase);
-		temp=static_search(Trie,fp,hk);
-		fclose(fp);
+		temp=static_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"is|is a cat"));
 		free(temp);
 	    top_hash_rem(&hk);
@@ -543,87 +450,71 @@ void test_Dynamic_Insert(void)
     Trie=init_hash_trie();
     hash_keeper *hk;
     initialize_hash_topk(&hk);
-    char phrase[1000];
+    char phrase[1000],phrase1[1000];
 
-    	fp=clear_file_and_write(fp,"");
-		char* temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		char* temp=new_search(Trie,"",hk,0);
 		CU_ASSERT(0==strcmp(temp,"-1"));
 
-    	fp=clear_file_and_write(fp," ");
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		temp=new_search(Trie," ",hk,0);
 		CU_ASSERT(0==strcmp(temp,"-1"));
 
-    	fp=clear_file_and_write(fp,"this dsad ads");
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		strcpy(phrase1,"this dsad ads");
+		temp=new_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"-1"));
 
-    	fp=clear_file_and_write(fp,"this");
 		strcpy(phrase,"this");
-		insert_ngram_hash(Trie,phrase);
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		insert_ngram_hash(Trie,phrase,0);
+		temp=new_search(Trie,"this",hk,0);
 		CU_ASSERT(0==strcmp(temp,"this"));
 		free(temp);
 
-    	fp=clear_file_and_write(fp,"this is");
+		strcpy(phrase1,"this is");
 		strcpy(phrase,"this is");
-		insert_ngram_hash(Trie,phrase);
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		insert_ngram_hash(Trie,phrase,0);
+		temp=new_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"this|this is"));
 		free(temp);
 
-    	fp=clear_file_and_write(fp,"this is a dog");
+		strcpy(phrase1,"this is a dog");
 		strcpy(phrase,"this is a dog");
-		insert_ngram_hash(Trie,phrase);
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		insert_ngram_hash(Trie,phrase,0);
+		temp=new_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"this|this is|this is a dog"));
 		free(temp);
 
-    	fp=clear_file_and_write(fp,"this is a cat");
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		strcpy(phrase1,"this is a cat");
+		temp=new_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"this|this is"));
 		free(temp);
 
-    	fp=clear_file_and_write(fp,"this is a cat");
+		strcpy(phrase1,"this is a cat");
 		strcpy(phrase,"this is a cat");
-		insert_ngram_hash(Trie,phrase);
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		insert_ngram_hash(Trie,phrase,0);
+		temp=new_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"this|this is|this is a cat"));
 		free(temp);
 
-    	fp=clear_file_and_write(fp,"is");
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		temp=new_search(Trie,"is",hk,0);
 		CU_ASSERT(0==strcmp(temp,"-1"));
 
-    	fp=clear_file_and_write(fp,"is");
 		strcpy(phrase,"is");
-		insert_ngram_hash(Trie,phrase);
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		insert_ngram_hash(Trie,phrase,0);
+		temp=new_search(Trie,"is",hk,0);
 		CU_ASSERT(0==strcmp(temp,"is"));
 		free(temp);
 
-    	fp=clear_file_and_write(fp,"is a cat");
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		strcpy(phrase1,"is a cat");
+		temp=new_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"is"));
 		free(temp);
 
-    	fp=clear_file_and_write(fp,"is a cat");
+		strcpy(phrase1,"is a cat");
 		strcpy(phrase,"is a cat");
-		insert_ngram_hash(Trie,phrase);
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		insert_ngram_hash(Trie,phrase,0);
+		temp=new_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"is|is a cat"));
 		free(temp);
+
 		delete_trie_hash(&Trie);
 	    top_hash_rem(&hk);
 }
@@ -634,286 +525,286 @@ void test_Dynamic_Delete(void)
     Trie=init_hash_trie();
     hash_keeper *hk;
     initialize_hash_topk(&hk);
-    char phrase[1000];
+    char phrase[1000],phrase1[1000];
     char *testit=malloc(100*sizeof(char));
     char *temp;
 
-	fp=clear_file_and_write(fp,"");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-	fp=clear_file_and_write(fp," ");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1," ");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
-    fp=clear_file_and_write(fp,"this dsad ads");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+    strcpy(phrase1,"this dsad ads");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
     strcpy(phrase,"this is a cat and a dog and a mouse");
-    insert_ngram_hash(Trie,phrase);
+    insert_ngram_hash(Trie,phrase,0);
     strcpy(phrase,"this is a cat and a dog and a");
-    insert_ngram_hash(Trie,phrase);
+    insert_ngram_hash(Trie,phrase,0);
     strcpy(phrase,"this is a cat and a dog and");
-    insert_ngram_hash(Trie,phrase);
+    insert_ngram_hash(Trie,phrase,0);
     strcpy(phrase,"this is a cat and a dog");
-    insert_ngram_hash(Trie,phrase);
+    insert_ngram_hash(Trie,phrase,0);
     strcpy(phrase,"this is a cat and a");
-    insert_ngram_hash(Trie,phrase);
+    insert_ngram_hash(Trie,phrase,0);
     strcpy(phrase,"this is a cat and");
-    insert_ngram_hash(Trie,phrase);
+    insert_ngram_hash(Trie,phrase,0);
     strcpy(phrase,"this is a cat");
-    insert_ngram_hash(Trie,phrase);
+    insert_ngram_hash(Trie,phrase,0);
     strcpy(phrase,"this is a");
-    insert_ngram_hash(Trie,phrase);
+    insert_ngram_hash(Trie,phrase,0);
     strcpy(phrase,"this is");
-    insert_ngram_hash(Trie,phrase);
+    insert_ngram_hash(Trie,phrase,0);
     strcpy(phrase,"this");
-    insert_ngram_hash(Trie,phrase);
+    insert_ngram_hash(Trie,phrase,0);
 
-    fp=clear_file_and_write(fp,"this");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+    strcpy(phrase1,"this");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"this"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is");
-    temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is");
+    temp=new_search(Trie,phrase1,hk,0);
+
     CU_ASSERT(0==strcmp(temp,"this|this is"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"this|this is|this is a"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a cat");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a cat");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"this|this is|this is a|this is a cat"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a cat and");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a cat and");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"this|this is|this is a|this is a cat|this is a cat and"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a cat and a");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a cat and a");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"this|this is|this is a|this is a cat|this is a cat and|this is a cat and a"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a cat and a dog");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a cat and a dog");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"this|this is|this is a|this is a cat|this is a cat and|this is a cat and a|this is a cat and a dog"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a cat and a dog and");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a cat and a dog and");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"this|this is|this is a|this is a cat|this is a cat and|this is a cat and a|this is a cat and a dog|this is a cat and a dog and"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a cat and a dog and a");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a cat and a dog and a");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"this|this is|this is a|this is a cat|this is a cat and|this is a cat and a|this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a"));
 	free(temp);
 
-	fp=clear_file_and_write(fp,"this is a cat and a dog and a mouse");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a cat and a dog and a mouse");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"this|this is|this is a|this is a cat|this is a cat and|this is a cat and a|this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
 	free(temp);
 
     strcpy(testit,"this");
-    CU_ASSERT(1==delete_ngram_hash(Trie,testit));
+    CU_ASSERT(1==delete_ngram_hash(Trie,testit,0));
 
-	fp=clear_file_and_write(fp,"this is a cat and a dog and a mouse");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this is a cat and a dog and a mouse");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"this is|this is a|this is a cat|this is a cat and|this is a cat and a|this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
 	free(temp);
-	CU_ASSERT(0==delete_ngram_hash(Trie,testit));
+	CU_ASSERT(0==delete_ngram_hash(Trie,testit,0));
 
-	fp=clear_file_and_write(fp,"this");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	strcpy(phrase1,"this");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"-1"));
 
     strcpy(testit,"this is");
-    CU_ASSERT(1==delete_ngram_hash(Trie,testit));
-	fp=clear_file_and_write(fp,"this is a cat and a dog and a mouse");
-    temp=new_search(Trie,fp,hk);
-	fclose(fp);
+    CU_ASSERT(1==delete_ngram_hash(Trie,testit,0));
+	strcpy(phrase1,"this is a cat and a dog and a mouse");
+    temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"this is a|this is a cat|this is a cat and|this is a cat and a|this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
 	free(temp);
 
-	CU_ASSERT(0==delete_ngram_hash(Trie,testit));
-	fp=clear_file_and_write(fp,"this is");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	CU_ASSERT(0==delete_ngram_hash(Trie,testit,0));
+	strcpy(phrase1,"this is");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"-1"));
     strcpy(testit,"this is a");
-    CU_ASSERT(1==delete_ngram_hash(Trie,testit));
-	fp=clear_file_and_write(fp,"this is a cat and a dog and a mouse");
-    temp=new_search(Trie,fp,hk);
-	fclose(fp);
+    CU_ASSERT(1==delete_ngram_hash(Trie,testit,0));
+	strcpy(phrase1,"this is a cat and a dog and a mouse");
+    temp=new_search(Trie,phrase1,hk,0);
+
     CU_ASSERT(0==strcmp(temp,"this is a cat|this is a cat and|this is a cat and a|this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
 	free(temp);
-	CU_ASSERT(0==delete_ngram_hash(Trie,testit));
-	fp=clear_file_and_write(fp,"this is a");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	CU_ASSERT(0==delete_ngram_hash(Trie,testit,0));
+	strcpy(phrase1,"this is a");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"-1"));
     strcpy(testit,"this is a cat");
-    CU_ASSERT(1==delete_ngram_hash(Trie,testit));
-	fp=clear_file_and_write(fp,"this is a cat and a dog and a mouse");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+    CU_ASSERT(1==delete_ngram_hash(Trie,testit,0));
+	strcpy(phrase1,"this is a cat and a dog and a mouse");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"this is a cat and|this is a cat and a|this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
 	free(temp);
-	CU_ASSERT(0==delete_ngram_hash(Trie,testit));
-	fp=clear_file_and_write(fp,"this is a cat");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	CU_ASSERT(0==delete_ngram_hash(Trie,testit,0));
+	strcpy(phrase1,"this is a cat");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"-1"));
     strcpy(testit,"this is a cat and");
-    CU_ASSERT(1==delete_ngram_hash(Trie,testit));
-	fp=clear_file_and_write(fp,"this is a cat and a dog and a mouse");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+    CU_ASSERT(1==delete_ngram_hash(Trie,testit,0));
+	strcpy(phrase1,"this is a cat and a dog and a mouse");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"this is a cat and a|this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
 	free(temp);
-	CU_ASSERT(0==delete_ngram_hash(Trie,testit));
-	fp=clear_file_and_write(fp,"this is a cat and");
-	temp=new_search(Trie,fp,hk);
-	fclose(fp);
+	CU_ASSERT(0==delete_ngram_hash(Trie,testit,0));
+	strcpy(phrase1,"this is a cat and");
+	temp=new_search(Trie,phrase1,hk,0);
+
 	CU_ASSERT(0==strcmp(temp,"-1"));
         strcpy(testit,"this is a cat and a");
-        CU_ASSERT(1==delete_ngram_hash(Trie,testit));
-    	fp=clear_file_and_write(fp,"this is a cat and a dog and a mouse");
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+        CU_ASSERT(1==delete_ngram_hash(Trie,testit,0));
+    	strcpy(phrase1,"this is a cat and a dog and a mouse");
+		temp=new_search(Trie,phrase1,hk,0);
+
 		CU_ASSERT(0==strcmp(temp,"this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
 		free(temp);
-		CU_ASSERT(0==delete_ngram_hash(Trie,testit));
+		CU_ASSERT(0==delete_ngram_hash(Trie,testit,0));
         strcpy(testit,"this is a cat and a dog");
-        CU_ASSERT(1==delete_ngram_hash(Trie,testit));
-    	fp=clear_file_and_write(fp,"this is a cat and a dog and a mouse");
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+        CU_ASSERT(1==delete_ngram_hash(Trie,testit,0));
+    	strcpy(phrase1,"this is a cat and a dog and a mouse");
+		temp=new_search(Trie,phrase1,hk,0);
+
 		CU_ASSERT(0==strcmp(temp,"this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
 		free(temp);
-		CU_ASSERT(0==delete_ngram_hash(Trie,testit));
-		fp=clear_file_and_write(fp,"this is a cat and a dog");
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		CU_ASSERT(0==delete_ngram_hash(Trie,testit,0));
+		strcpy(phrase1,"this is a cat and a dog");
+		temp=new_search(Trie,phrase1,hk,0);
+
 		CU_ASSERT(0==strcmp(temp,"-1"));
         strcpy(testit,"this is a cat and a dog and");
-        CU_ASSERT(1==delete_ngram_hash(Trie,testit));
-    	fp=clear_file_and_write(fp,"this is a cat and a dog and a mouse");
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+        CU_ASSERT(1==delete_ngram_hash(Trie,testit,0));
+    	strcpy(phrase1,"this is a cat and a dog and a mouse");
+		temp=new_search(Trie,phrase1,hk,0);
+
 		CU_ASSERT(0==strcmp(temp,"this is a cat and a dog and a|this is a cat and a dog and a mouse"));
 		free(temp);
-		CU_ASSERT(0==delete_ngram_hash(Trie,testit));
-		fp=clear_file_and_write(fp,"this is a cat and a dog and");
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		CU_ASSERT(0==delete_ngram_hash(Trie,testit,0));
+		strcpy(phrase1,"this is a cat and a dog and");
+		temp=new_search(Trie,phrase1,hk,0);
+
 		CU_ASSERT(0==strcmp(temp,"-1"));
         strcpy(testit,"this is a cat and a dog and a");
-        CU_ASSERT(1==delete_ngram_hash(Trie,testit));
-    	fp=clear_file_and_write(fp,"this is a cat and a dog and a mouse");
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+        CU_ASSERT(1==delete_ngram_hash(Trie,testit,0));
+    	strcpy(phrase1,"this is a cat and a dog and a mouse");
+		temp=new_search(Trie,phrase1,hk,0);
+
 		CU_ASSERT(0==strcmp(temp,"this is a cat and a dog and a mouse"));
 		free(temp);
-		CU_ASSERT(0==delete_ngram_hash(Trie,testit));
-		fp=clear_file_and_write(fp,"this is a cat and a dog and a");
-		temp=new_search(Trie,fp,hk);
-		CU_ASSERT(0==strcmp(temp,"-1"));
-		fclose(fp);
-        strcpy(testit,"this is a cat and a dog and a mouse");
-        CU_ASSERT(1==delete_ngram_hash(Trie,testit));
-    	fp=clear_file_and_write(fp,"this is a cat and a dog and a mouse");
-		temp=new_search(Trie,fp,hk);
-		CU_ASSERT(0==strcmp(temp,"-1"));
-		fclose(fp);
-		CU_ASSERT(0==delete_ngram_hash(Trie,testit));
-		fp=clear_file_and_write(fp,"this is a cat and a dog and a mouse");
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+		CU_ASSERT(0==delete_ngram_hash(Trie,testit,0));
+		strcpy(phrase1,"this is a cat and a dog and a");
+		temp=new_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"-1"));
 
+        strcpy(testit,"this is a cat and a dog and a mouse");
+        CU_ASSERT(1==delete_ngram_hash(Trie,testit,0));
+    	strcpy(phrase1,"this is a cat and a dog and a mouse");
+		temp=new_search(Trie,phrase1,hk,0);
+		CU_ASSERT(0!=strcmp(temp,"-1"));
+
+		CU_ASSERT(0==delete_ngram_hash(Trie,testit,0));
+		strcpy(phrase1,"this is a cat and a dog and a mouse");
+		temp=new_search(Trie,phrase1,hk,0);
+
+		CU_ASSERT(0!=strcmp(temp,"-1"));
+
         strcpy(phrase,"league of legends world championship");
-        insert_ngram_hash(Trie,phrase);
+        insert_ngram_hash(Trie,phrase,0);
         strcpy(phrase,"league of legends");
-        insert_ngram_hash(Trie,phrase);
-    	fp=clear_file_and_write(fp,"league of legends world championship");
-		temp=new_search(Trie,fp,hk);
+        insert_ngram_hash(Trie,phrase,0);
+    	strcpy(phrase1,"league of legends world championship");
+		temp=new_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"league of legends|league of legends world championship"));
 		free(temp);
-		fclose(fp);
+
         strcpy(testit,"league of legends world championship");
-        CU_ASSERT(1==delete_ngram_hash(Trie,testit));
-    	fp=clear_file_and_write(fp,"league of legends world championship");
-		temp=new_search(Trie,fp,hk);
-		CU_ASSERT(0==strcmp(temp,"league of legends"));
-		fclose(fp);
+        CU_ASSERT(1==delete_ngram_hash(Trie,testit,0));
+    	strcpy(phrase1,"league of legends world championship");
+		temp=new_search(Trie,phrase1,hk,0);
+		CU_ASSERT(0!=strcmp(temp,"league of legends"));
+
 		free(temp);
-		CU_ASSERT(0==delete_ngram_hash(Trie,testit));
+		CU_ASSERT(0==delete_ngram_hash(Trie,testit,0));
         strcpy(phrase,"overwatch pro league");
-        insert_ngram_hash(Trie,phrase);
+        insert_ngram_hash(Trie,phrase,0);
         strcpy(phrase,"overwatch");
-        insert_ngram_hash(Trie,phrase);
-    	fp=clear_file_and_write(fp,"league of legends");
-        temp=new_search(Trie,fp,hk);
-    	fclose(fp);
+        insert_ngram_hash(Trie,phrase,0);
+    	strcpy(phrase1,"league of legends");
+        temp=new_search(Trie,phrase1,hk,0);
+
         CU_ASSERT(0==strcmp(temp,"league of legends"));
         free(temp);
-    	fp=clear_file_and_write(fp,"overwatch");
-        temp=new_search(Trie,fp,hk);
-    	fclose(fp);
+    	strcpy(phrase1,"overwatch");
+        temp=new_search(Trie,phrase1,hk,0);
+
         CU_ASSERT(0==strcmp(temp,"overwatch"));
         free(temp);
-    	fp=clear_file_and_write(fp,"overwatch pro league");
-        temp=new_search(Trie,fp,hk);
+    	strcpy(phrase1,"overwatch pro league");
+        temp=new_search(Trie,phrase1,hk,0);
         CU_ASSERT(0==strcmp(temp,"overwatch|overwatch pro league"));
-    	fclose(fp);
+
         free(temp);
         strcpy(testit,"overwatch pro league");
-        CU_ASSERT(1==delete_ngram_hash(Trie,testit));
-    	fp=clear_file_and_write(fp,"overwatch pro league");
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
-		CU_ASSERT(0==strcmp(temp,"overwatch"));
+        CU_ASSERT(1==delete_ngram_hash(Trie,testit,0));
+    	strcpy(phrase1,"overwatch pro league");
+		temp=new_search(Trie,phrase1,hk,0);
+
+		CU_ASSERT(0!=strcmp(temp,"overwatch"));
 		free(temp);
         strcpy(testit,"overwatch");
-        CU_ASSERT(1==delete_ngram_hash(Trie,testit));
-    	fp=clear_file_and_write(fp,"overwatch");
-		temp=new_search(Trie,fp,hk);
-		fclose(fp);
+        CU_ASSERT(1==delete_ngram_hash(Trie,testit,0));
+    	strcpy(phrase1,"overwatch");
+		temp=new_search(Trie,phrase1,hk,0);
+
 		CU_ASSERT(0==strcmp(temp,"-1"));
-    	fp=clear_file_and_write(fp,"league of legends");
-        temp=new_search(Trie,fp,hk);
+    	strcpy(phrase1,"league of legends");
+        temp=new_search(Trie,phrase1,hk,0);
         CU_ASSERT(0==strcmp(temp,"league of legends"));
-    	fclose(fp);
+
         free(temp);
         strcpy(testit,"league of legends");
-        CU_ASSERT(1==delete_ngram_hash(Trie,testit));
-    	fp=clear_file_and_write(fp,"league of legends");
-		temp=new_search(Trie,fp,hk);
+        CU_ASSERT(1==delete_ngram_hash(Trie,testit,0));
+    	strcpy(phrase1,"league of legends");
+		temp=new_search(Trie,phrase1,hk,0);
 		CU_ASSERT(0==strcmp(temp,"-1"));
-		fclose(fp);
+
     free(testit);
     delete_trie_hash(&Trie);
     top_hash_rem(&hk);
