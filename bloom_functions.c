@@ -37,9 +37,6 @@ void set_bit(char* c,uint32_t hash_result,int size)
 
 	uint64_t temp=(hash_result%(CHAR_BIT*size))/CHAR_BIT,temp1=(hash_result%(CHAR_BIT*size))%CHAR_BIT;
 	c[temp]|=(1<<temp1);
-	//printf("\nset_bit\n");
-	//printf("temp1=%" PRId64 "\n",temp1);
-	//printf("c[%"PRId64"]=%d \n",temp,c[temp]);
 }
 
 /*
@@ -51,20 +48,10 @@ int check_bit(char* c,uint32_t hash_result,int size)
 {
 	//printf("sting=%s\n",c);
 	//printf("hash_result=%" PRIu32 "\n",hash_result);
-	uint64_t temp=(hash_result%(CHAR_BIT*size))/CHAR_BIT,temp1=(hash_result%(CHAR_BIT*size))%CHAR_BIT;  //temp =thesh tou block ,temp1=thesh tou bit//
+	uint64_t temp=(hash_result%(CHAR_BIT*size))/CHAR_BIT,temp1=(hash_result%(CHAR_BIT*size))%CHAR_BIT;
 
-	if((c[temp]>>temp1)&1)				//kanoume olisthish to c[temp] kata temp1 theseis kai prosthesoume to 1 .an einai 0 tote den uparxei alliws uparxei an einai 1//
-	{
-		//printf("\n1\n");
-		//printf("c[temp]=%d \n",c[temp]);
-		//printf("temp=%" PRId64 "\n",temp);
-		//printf("temp1=%" PRId64 "\n",temp);
+	if((c[temp]>>temp1)&1)
 		return 1;
-	}
-	//printf("\n0\n");
-	//printf("c[temp]=%d \n",c[temp]);
-	//printf("temp=%" PRId64 "\n",temp);
-	//printf("temp1=%" PRId64 "\n",temp);
 	return 0;
 }
 

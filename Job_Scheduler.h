@@ -44,16 +44,17 @@ struct thread_param
 	hash_trie* indx;
 	hash_keeper* hash;
     char **buffer;
+    int flagslen;
 };
 
 void printjobs(Job_Scheduler* schedule);
-Job_Scheduler* initialize_scheduler(int execution_threads);
+Job_Scheduler* initialize_scheduler(int,hash_trie*,hash_keeper**,int,thread_param **);
 void *Worker(void* i);
 void submit_job(Job_Scheduler* schedule,Job* j,int id,int current_version);
-thread_param *execute_all_jobs(Job_Scheduler* schedule,hash_trie*,hash_keeper**,int,char**);
+void execute_all_jobs(Job_Scheduler*,thread_param *,char **);
 void wait_all_tasks_finish(Job_Scheduler* schedule);
 void destroy_scheduler(Job_Scheduler* schedule);
 void reset_queue(Queue *);
 void execute_job(thread_param *,int);
-void delete_threads(Job_Scheduler **);
+void delete_threads(Job_Scheduler **,thread_param **);
 #endif /* JOB_SCHEDULER_H_ */

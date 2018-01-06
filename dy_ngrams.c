@@ -767,7 +767,7 @@ int search_hash(hash_trie* ht,char *phrase)//vriskei ton arithmo tou bicket pou 
 char* new_search(hash_trie* ht,char *parseddata,hash_keeper *hk,int current_version)//search function
 {
 	char* result=NULL;
-    char *phr;
+    char *phr=NULL;
 	char* bloom_vector;
 	Arguments* args;
 	args=malloc(sizeof(Arguments));
@@ -966,30 +966,30 @@ char* new_search(hash_trie* ht,char *parseddata,hash_keeper *hk,int current_vers
             //if(temp1==NULL) break;
             //printf("temp1 is %s\n",temp1);
             //getchar();
-            phr1=malloc(strlen(temp1)+1);
-            strcpy(phr1,temp1);
-            found=binary_search(phr1,node->children,node->child_num);//psaxnoume na doume an uparxei sto trie_node
+            //phr1=malloc(strlen(temp1)+1);
+            //strcpy(phr1,temp1);
+            found=binary_search(temp1,node->children,node->child_num);//psaxnoume na doume an uparxei sto trie_node
             if(found==-1)
             {
-                free(phr1);
-                phr1=NULL;
+                //free(phr1);
+                //phr1=NULL;
                 break;
             }
             int len_phr;
             int len_phr1;
             len_phr=strlen(phr);
-            len_phr1=strlen(phr1);
+            len_phr1=strlen(temp1);
             phr=realloc(phr,len_phr+1+len_phr1+1);
             strcat(phr," ");
-            strcat(phr,phr1);
+            strcat(phr,temp1);
             //printf("phr is %s\n",phr);
             //getchar();
             if(node->children[found]->a_version>current_version || (node->children[found]->d_version<=current_version && node->children[found]->d_version!=0))
             {
             	//printf("2h while\n");
                 node=node->children[found];
-                free(phr1);
-                phr1=NULL;
+                //free(phr1);
+                //phr1=NULL;
                 temp1=strtok_r(NULL," ",&parseddataprogress1);
             	continue;
             }
@@ -1024,8 +1024,8 @@ char* new_search(hash_trie* ht,char *parseddata,hash_keeper *hk,int current_vers
                 }
             }
             node=node->children[found];
-            free(phr1);
-            phr1=NULL;
+            //free(phr1);
+            //phr1=NULL;
             temp1=strtok_r(NULL," ",&parseddataprogress1);
         }
         //first1=0;
@@ -1822,5 +1822,93 @@ void merge_everything(hash_keeper **hk,int tm)
             }
             hk[i]->bucket[j]->cnt=0;
         }
+    }
+}
+
+void clean_up_hash(hash_trie *ht,int current_version)
+{
+    int i;
+    i=0;
+    for(i=0;i<ht->bucket_num;i++)
+    {
+        clean_up(ht->bucket[i],ht,current_version);
+    }
+}
+
+void clean_up(Index *indx,hash_trie *ht,int current_version)
+{
+    int i;
+    i=0;
+    while(i<indx->root_num)
+    {
+        trie_node *temp=&(indx->root[i]);
+        if(temp->is_final=='Y')
+        {
+            if(temp->d_version>0)
+            {
+                temp->is_final='N';
+            }
+        }
+        clean_up_helper(temp,ht,current_version);
+        if(temp->child_num==0)
+        {
+            if(temp->is_final=='N')
+            {
+                if(temp->word_flag==0)
+                {
+                    memmove(indx->root + i,indx->root+i+1,(indx->root_num-i-1)*sizeof(trie_node));
+                    indx->root_num=indx->root_num-1;
+                }
+                else if(temp->word_flag==1)
+                {
+                    free(temp->word);
+                    memmove(indx->root + i,indx->root+i+1,(indx->root_num-i-1)*sizeof(trie_node));
+                    indx->root_num=indx->root_num-1;
+                }
+            }
+        }
+        i++;
+    }
+}
+
+void clean_up_helper(trie_node *node,hash_trie *ht,int current_version)
+{
+    int i;
+    i=0;
+    if(node->child_num==0)
+    {
+        return;
+    }
+    while(i<node->child_num)
+    {
+        trie_node *temp=node->children[i];
+        if(temp->is_final=='Y')
+        {
+            if(temp->d_version>0)
+            {
+                temp->is_final='N';
+            }
+        }
+        clean_up_helper(temp,ht,current_version);
+        if(temp->child_num==0)
+        {
+            if(temp->is_final=='N')
+            {
+                if(temp->word_flag==0)
+                {
+                    free(temp);
+                    memmove(node->children + i,node->children+i+1,(node->child_num-i-1)*sizeof(trie_node *));
+                    node->child_num=node->child_num-1;
+                }
+                else if(temp->word_flag==1)
+                {
+                    free(temp->word);
+                    free(temp);
+                    memmove(node->children + i,node->children+i+1,(node->child_num-i-1)*sizeof(trie_node *));
+                    node->child_num=node->child_num-1;
+                }
+            }
+        }
+        i++;
     }
 }

@@ -85,4 +85,7 @@ void top_hash_del(hash_keeper *);
 void rare_occasion(hash_trie*);
 void merge_hash_topk(hash_keeper*,char*,int);
 void merge_everything(hash_keeper **,int);
+void clean_up_helper(trie_node *,hash_trie *,int);
+void clean_up(Index *,hash_trie *,int);
+void clean_up_hash(hash_trie *,int);
 #endif /* NGRAMS_H_ */
