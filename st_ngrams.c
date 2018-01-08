@@ -91,7 +91,6 @@ void compress_nodes(trie_node* parent,trie_node* current)
 	}
 	else if(parent->word_flag==0 && current->word_flag==1)
 	{
-
 		if(strlen(parent->static_word)+strlen(current->word)<=50)
 			strcat(parent->static_word,current->word);
 		else
@@ -101,7 +100,6 @@ void compress_nodes(trie_node* parent,trie_node* current)
 			strcat(parent->word,current->word);
 			parent->word_flag=1;
 		}
-
 	}
 	else if(parent->word_flag==1 && current->word_flag==0)
 	{
@@ -121,7 +119,6 @@ void compress_nodes(trie_node* parent,trie_node* current)
 			strcat(parent->word,current->static_word);
 			parent->word_flag=1;
 		}
-
 	}
 	parent->array_size++;
 	parent->array=realloc(parent->array,parent->array_size*sizeof(signed short));
@@ -145,7 +142,6 @@ void delete_static_node(trie_node** temp,trie_node** parent,int paidia)
 		}
 		free(parent[i]);
 		parent[i]=NULL;
-
 	}
 	free(parent);
 	parent=NULL;
@@ -163,7 +159,7 @@ void st_delete_hash(hash_trie **ht)
 }
 void st_delete_trie(Index **indx)
 {
-    int i,j;
+    int i;
     for(i=0;i<(*indx)->root_num;i++)
     {
         st_delete_helper(&((*indx)->root[i]));
@@ -178,11 +174,7 @@ void st_delete_trie(Index **indx)
         }
         free((*indx)->root[i].children);
         (*indx)->root[i].children=NULL;
-
     }
-
-
-
     free((*indx)->root);
     (*indx)->root=NULL;
     free((*indx));
@@ -221,85 +213,57 @@ int st_binary_search_root(char *phrase,trie_node *node,int length)
 	 middle = (first+last)/2;
 	 while (first <= last)
 	 {
-         //printf("15\n");
 		 memset(temp, 0,2000 );
-		 //printf("15.1\n");
 		 if(node[first].word_flag==1)
 		 {
-            //printf("15.2 $$$$$ %d\n",abs(node[first].array[0]));
 			 strncpy(temp,node[first].word,abs(node[first].array[0]));
-			 //printf("15.3\n");
 		 }
 		 else
 		 {
-            //printf("15.4 $$$$$ %d\n",abs(node[first].array[0]));
 			 strncpy(temp,node[first].static_word,abs(node[first].array[0]));
-			// printf("15.5\n");
 		 }
 	 	 if (!strcmp(temp,phrase))
 	 	 {
-             //printf("15.6\n");
 		 	 return first;
 	 	 }
 		memset(temp, 0, 2000);
 		if(node[last].word_flag==1)
 		{
-            //printf("15.7 $$$$$ %d\n",abs(node[last].array[0]));
 			strncpy(temp,node[last].word,abs(node[last].array[0]));
-			//printf("15.8\n");
 		}
 		else
 		{
-            //printf("15.9 $$$$$ %d\n",abs(node[last].array[0]));
 			strncpy(temp,node[last].static_word,abs(node[last].array[0]));
-			//printf("15.91\n");
 		}
 	 	if (!strcmp(temp,phrase))
 	 	{
-             //printf("15.92\n");
 		 	 return last;
 	 	}
-	 	//printf("15.93\n");
 		memset(temp, 0, 2000);
-		//printf("15.94\n");
 		if(node[middle].word_flag==1)
 		{
-            //printf("15.94 $$$$$ %d\n",abs(node[middle].array[0]));
 			strncpy(temp,node[middle].word,abs(node[middle].array[0]));
-			//printf("15.95\n");
 		}
 		else
 		{
-            //printf("15.96 $$$$$ %d\n",abs(node[middle].array[0]));
 			strncpy(temp,node[middle].static_word,abs(node[middle].array[0]));
-			//printf("15.97\n");
 		}
         if ((strcmp(temp ,phrase))<0 )
         {
-            //printf("15.98 %s %s\n",temp,phrase);
             first = middle + 1;
-            //printf("15.99\n");
         }
         else if ((strcmp(temp ,phrase))==0)
         {
-            //printf("15.991\n");
             return middle;
-            //printf("15.992\n");
         }
         else
         {
-            //printf("15.993\n");
             last = middle - 1;
-            //printf("15.994\n");
         }
-        //printf("15.995\n");
 	    middle = (first + last)/2;
-	    //printf("15.996\n");
 	 }
-	 //printf("15.997\n");
 	 if (first > last)
 	 {
-        //printf("15.998\n");
         return -1;
 	 }
 }
@@ -313,70 +277,55 @@ int st_binary_search(char* phrase,trie_node** node,int length)
 	 middle = (first+last)/2;
 	 while (first <= last)
 	 {
-         //printf("0\n");
 		 memset(temp, 0, 100);
-         //printf("1\n");
 		 if(node[first]->word_flag==1)
-		 {	 strncpy(temp,node[first]->word,abs(node[first]->array[0]));
+		 {
+			 strncpy(temp,node[first]->word,abs(node[first]->array[0]));
 		 }
 		 else
 		 {
-            //printf("2\n");
 			 strncpy(temp,node[first]->static_word,abs(node[first]->array[0]));
 		 }
-		 //printf("3\n");
 	 	 if (strcmp(temp,phrase)==0)
 	 		 return first;
 		 memset(temp, 0, 100);
-		 //printf("4\n");
 		 if(node[last]->word_flag==1)
 			 strncpy(temp,node[last]->word,abs(node[last]->array[0]));
 		 else
 		 {
-            //printf("5\n");
 			 strncpy(temp,node[last]->static_word,abs(node[last]->array[0]));
 		 }
-		 //printf("6\n");
 	 	 if (strcmp(temp,phrase)==0)
 	 		 return last;
 		 memset(temp, 0, 100);
-		 //printf("7\n");
 		 if(node[middle]->word_flag==1)
 		 {
-             //printf("7.5\n");
 			 strncpy(temp,node[middle]->word,abs(node[middle]->array[0]));
 		 }
 		 else
 		 {
-             //printf("8 %s\n",node[middle]->static_word);
 			 strncpy(temp,node[middle]->static_word,abs(node[middle]->array[0]));
 		 }
-		 //printf("9 %s %s\n",temp,phrase);
 		 if ((strcmp(temp ,phrase))<0 )
 		 {
-            //printf("10\n");
             first = middle + 1;
          }
 		 else if ((strcmp(temp,phrase))==0 )
 		 {
-             //printf("11\n");
 			 return middle;
 			 break;
 		 }
 		 else
 		 {
-            //printf("11.2\n");
             last = middle - 1;
 		 }
 	     middle = (first + last)/2;
 	 }
 	 if (first > last)
 	 {
-         //printf("11.5\n");
 		 return -1;
 	 }
 }
-
 char* static_search(hash_trie *ht,char* fp,hash_keeper* hk,int id)
 {
 	int i;
@@ -389,30 +338,16 @@ char* static_search(hash_trie *ht,char* fp,hash_keeper* hk,int id)
 	initialize_args(args,VECTOR_SIZE,HASH_NUMBER);
 	bloom_vector=malloc(args->size*sizeof(char));
 	initialize_bloom_filter(args,bloom_vector);
-	//char* temp=malloc(strlen(fp)+1);
 	char* array;
 	char* result;
 	Index *indx;
-    int k,count=0;
-    int cnt=0;
-    int len=0;
     char *array_progress;
-    char *array_progress1;
-    //printf("fp=%s\n",fp);
-    //printf("new question\n");
     array=strtok_r(fp," ",&array_progress);
-   // printf("array2=%s\narray_progress=%s\n",array,array_progress);
 	while(array!=NULL)
     {
-            //printf("14.2\n");
-			//printf("arxi\n");
-			//printf("array=%s\n",array);
             found=-1;
-            //printf("14.3\n");
             indx=ht->bucket[search_hash(ht,array)];
-            //printf("14.4\n");
             found=st_binary_search_root(array,indx->root,indx->root_num);		//PSAXNOUME NA VROUME AN H EPILEGMENH LEKSH VRISKETAI STO ROOT//
-            //printf("11.7\n");
             if(found>=0)
                 if(indx->root[found].array_size>1)
                 {
@@ -422,7 +357,6 @@ char* static_search(hash_trie *ht,char* fp,hash_keeper* hk,int id)
                 }
             if(found==-1)			//AN DEN UPARXEI STO ROOT SUNEXIZOUME STHN EPOMENH//
             {
-               // printf("above continue\n");
                 array=strtok_r(NULL," ",&array_progress);
                 continue;
             }
@@ -460,28 +394,15 @@ char* static_search(hash_trie *ht,char* fp,hash_keeper* hk,int id)
                         insert_hash_topk(hk,subphrase);
                     }
                 }
-                //temp=&fp[strlen(fp)-(strlen(fp)-k-1)];
-                //printf("temp=%s\n",temp);
-              //  getchar();
-                //array_progress1=array_progress;
                 char *restphrase=malloc(strlen(array_progress)+1);
                 strcpy(restphrase,array_progress);
-               // printf("restphrase=%s\narray_progress1=%s\n",restphrase,array_progress1);
                 static_search_node(&(indx->root[found]),restphrase,&subphrase,bloom_vector,args,&glob,hk,&result, id);			//AN UPARXEI STO ROOT TOTE ANADROMIKA PHGAINOUME STA PAIDIA//
-                //printf("13\n");
                 free(subphrase);
                 free(restphrase);
                 subphrase=NULL;
             }
-          //  printf("array2=%s\narray_progress=%s\n",array,array_progress);
             array=strtok_r(NULL," ",&array_progress);
-            //printf("14\n");
-            //printf("array2=%s\narray_progress=%s\n",array,array_progress);
-           // getchar();
-            //if(array==NULL)
-             //   break;
     }
-    //printf("14.1\n");
 	if(glob==0)
 	{
 		free(args);
@@ -525,8 +446,6 @@ void static_search_node(trie_node* node,char* fp1,char** subphrase,char* bloom_v
 	int first=0;
 	while(1)
 	{
-	    //printf("restphrase=%s\n",fp1);
-	    //getchar();
 		if(flag==0)								//an to flag=0 tote shmainei oti exoume hdh mia leksh gia thn opoia den exoume apofasisei an akolouthei thn upoloiph frash//
         {
             if(first==0)
@@ -551,23 +470,16 @@ void static_search_node(trie_node* node,char* fp1,char** subphrase,char* bloom_v
                 strcpy(array,array1);
             }
         }
-        //printf("array1=%s\n",array);
-        //getchar();
-
 		if(node->array_size<=1 || flag==1)		//an o pinakas me tis lekseis exei mesa mia leksh //
 		{
 			if(flag!=1)							//an to flag=1 dhladh exoume vrei pou anhkei h leksh alla den exoume dei an einai final tote den ksanapsaxnoume//
 			{
 				found=st_binary_search(array,node->children,node->child_num);
-                //printf("11.8\n");
 			}
 			flag=0;
 			if(found==-1 )					//an den to vrike tote epistrefoume pisw kai sunexizoume apo ekei pou eixame meinei//
 			{
-                //printf("11.85\n");
-				//printf("id=%d\n",id);
 				node->fores[id]=0;
-				//printf("11.855\n");
 				return ;
 
 			}
@@ -669,7 +581,6 @@ void static_search_node(trie_node* node,char* fp1,char** subphrase,char* bloom_v
 					break;
 				}
 				found=st_binary_search(array,node->children,node->child_num);
-				//printf("11.9\n");
 				if(found!=-1)
 				{
 					if(node->children[found]->array_size<=1)flag=1;
@@ -692,7 +603,6 @@ void static_search_node(trie_node* node,char* fp1,char** subphrase,char* bloom_v
 }
 int st_insert_ngram_hash(hash_trie *ht,char *phrase)//idia san tin insert_ngram_hash diladi kanei linear hashing apla to insert sto bucket ginetai apo tin st_insert_ngram
 {
-    //printf("phrase is1 %s\n",phrase);
     char *temp;
     temp=malloc(strlen(phrase)+1);
     strcpy(temp,phrase);
@@ -712,10 +622,8 @@ int st_insert_ngram_hash(hash_trie *ht,char *phrase)//idia san tin insert_ngram_
     hash_val_temp=0;
     hash_val_temp=hash_fun(temp1);
     hash_val=hash_val_temp%md;
-    //printf("phrase is2 %s\n",phrase);
     if(hash_val>=ht->pointer)
     {
-        //printf("i am here1\n");
         int overflow;
         overflow=st_insert_ngram(ht->bucket[hash_val],phrase);
         if(overflow>1)
@@ -770,13 +678,10 @@ int st_insert_ngram_hash(hash_trie *ht,char *phrase)//idia san tin insert_ngram_
     }
     else if(hash_val<ht->pointer)
     {
-        //printf("i am here2\n");
         md*=2;
         hash_val=hash_val_temp%md;
         int overflow;
-        //printf("phrase is3 %s\n",phrase);
         overflow=st_insert_ngram(ht->bucket[hash_val],phrase);
-        //printf("i am here3\n");
         if(overflow>1)
         {
             trie_node *temp_array;
@@ -832,7 +737,7 @@ int st_insert_ngram_hash(hash_trie *ht,char *phrase)//idia san tin insert_ngram_
 }
 int st_insert_ngram(Index *indx, char *phrase)
 {
-    //printf("phrase is4 %s\n",phrase);
+
     int of;
     of=1;
 	char *str;
@@ -864,22 +769,12 @@ int st_insert_ngram(Index *indx, char *phrase)
 		{
 			strcpy(indx->root[indx->root_num-1].static_word,str);
 			indx->root[indx->root_num-1].word_flag=0;
-			/*if(!strcmp(indx->root[indx->root_num-1].static_word,"tap"))
-			{
-                printf("0\n");
-                getchar();
-			}*/
 		}
 		else					//dunamikh desmeush
 		{
 			indx->root[indx->root_num-1].word=malloc(strlen(str)+1);
 			strcpy(indx->root[indx->root_num - 1].word, str);
 			indx->root[indx->root_num-1].word_flag=1;
-			/*if(!strcmp(indx->root[indx->root_num - 1].word,"tap"))
-			{
-                printf("1\n");
-                getchar();
-			}*/
 		}
 		if(indx->root[indx->root_num-1].word_flag==0)
 			indx->root[indx->root_num-1].array[indx->root[indx->root_num-1].array_size-1]=strlen(indx->root[indx->root_num - 1].static_word)-2*strlen(indx->root[indx->root_num - 1].static_word);
@@ -901,9 +796,7 @@ int st_insert_ngram(Index *indx, char *phrase)
 			return of;
 		}
         int found=-1;
-        //printf("phrase is5 %s\n",phrase);
 		InsertionSort_Root(indx->root,indx->root_num);
-		//printf("i am here4\n");
         found=binary_search_root(str,indx->root,indx->root_num);
 		st_insert_node(&(indx->root[found]),str1);
 	}
@@ -929,7 +822,6 @@ int st_insert_ngram(Index *indx, char *phrase)
 }
 void st_insert_node(trie_node* node,char* phrase)
 {
-    //printf("phrase is %c\n",phrase[0]);
     char *progress;
 	char *str = strtok_r(phrase, " ",&progress);
     while(1)
@@ -937,7 +829,6 @@ void st_insert_node(trie_node* node,char* phrase)
         if(str==NULL)
             break;
         int found=-1;
-        //printf("prin\n");
         found=binary_search(str,node->children,node->child_num);
         if(found==-1)
         {
@@ -948,7 +839,6 @@ void st_insert_node(trie_node* node,char* phrase)
             }
             node->child_num++;
             node->children[node->child_num-1]=create_trie_node();
-
             node->children[node->child_num-1]->array=malloc(sizeof(signed short));
             node->children[node->child_num-1]->array_size=1;
             node->children[node->child_num-1]->fores=malloc(thread_number*sizeof(int));
@@ -960,24 +850,13 @@ void st_insert_node(trie_node* node,char* phrase)
     		{
                 strcpy(node->children[node->child_num-1]->static_word,str);
                 node->children[node->child_num-1]->word_flag=0;
-                /*if(!strcmp(node->children[node->child_num-1]->static_word,"tap"))
-                {
-                    printf("0\n");
-                    getchar();
-                }*/
     		}
     		else					//dunamikh desmeush
     		{
                 node->children[node->child_num-1]->word=malloc(strlen(str)+1);
                 strcpy(node->children[node->child_num-1]->word,str);
                 node->children[node->child_num-1]->word_flag=1;
-                /*if(!strcmp(node->children[node->child_num-1]->word,"tap"))
-                {
-                    printf("1\n");
-                    getchar();
-                }*/
     		}
-
             node->children[node->child_num-1]->array[ node->children[node->child_num-1]->array_size-1]=strlen(str)-2*strlen(str);
             char *str1;
             str1=malloc((strlen(str)+1)*sizeof(char));

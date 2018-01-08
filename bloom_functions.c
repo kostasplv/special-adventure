@@ -18,12 +18,10 @@ void printbincharpad(int size,char* c)
 	int i,j;
 	for(j=0;j<size;j++)
 	{
-		//printf("Keli %d\n",j);
 		for (i = CHAR_BIT-1; i >= 0; i--)
 		{
 			putchar( (c[j] & (1 << i)) ? '1' : '0' );
 		}
-		//putchar('\n');
 	}
 	putchar('\n');
 }
@@ -46,10 +44,7 @@ void set_bit(char* c,uint32_t hash_result,int size)
  */
 int check_bit(char* c,uint32_t hash_result,int size)
 {
-	//printf("sting=%s\n",c);
-	//printf("hash_result=%" PRIu32 "\n",hash_result);
 	uint64_t temp=(hash_result%(CHAR_BIT*size))/CHAR_BIT,temp1=(hash_result%(CHAR_BIT*size))%CHAR_BIT;
-
 	if((c[temp]>>temp1)&1)
 		return 1;
 	return 0;

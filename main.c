@@ -51,8 +51,6 @@ int main(int argc, char *argv[])
         printf("wrong arguements\n");
         return -1;
     }
-    //Job *job=malloc(sizeof(Job));
-    //job->job_work=NULL;
     char *choice;
     choice = malloc(20);
     char cc;
@@ -119,16 +117,11 @@ int main(int argc, char *argv[])
             phrase=NULL;
             if(c==EOF) break;
         }
-        char *qphrase;
-        char c[1000000];
-        char *progress;
-        char *command;
-        char *parseddata;
-        thread_param *temp;
-        //temp=malloc(thread_number*sizeof(thread_param));
-        Job_Scheduler* sch=initialize_scheduler(thread_number,Trie,hk,0,&temp);
-        int question_counter=0,top_counter=0;
-        int counter1=0,current_version=0,prev_current_version=-1;
+        thread_param *temp;//domi gia na perasoume orismata sta threads
+
+        Job_Scheduler* sch=initialize_scheduler(thread_number,Trie,hk,0,&temp);//arxikopoioume ton job_scheduler kai ta threads
+        int question_counter=0;
+        int counter1=0,current_version=0,prev_current_version=-1;  		//arxikopoioume to current version se 0 kai to prev_current_version se -1//
         while(1)
         {
             int phrase_size=20;
@@ -137,11 +130,10 @@ int main(int argc, char *argv[])
             char c;
             c=fgetc(query_f);
             if(c==EOF)
-                {
+            {
                 free(phrase);
                 break;
-                }
-            //printf("i am here1.2\n");
+            }
             while(c!=EOF && c!='\n')
             {
                 if(counter==phrase_size)
@@ -159,36 +151,16 @@ int main(int argc, char *argv[])
                 phrase=realloc(phrase,phrase_size*sizeof(char));
             }
             phrase[counter]='\0';
-            //printf("i am here1.3 phrase %s\n",phrase);
             Job* job=malloc(sizeof(Job));
             job->job_work=NULL;
             if(phrase[0]=='Q')
             {
-                prev_current_version=0;
+                prev_current_version=0;						//h metavlhth auth eksasfalizei oti exei erthei toulaxiston ena question etsi wste na arxise na auksanetai to current vesrion//
             	char *phrase1_progress;
             	char *phrase1;
             	phrase1=strtok_r(phrase," ",&phrase1_progress);
             	phrase1=strtok_r(NULL,"",&phrase1_progress);
-            	int phrase1len;
-            	/*if(phrase1==NULL)
-            	{
-                    printf("its true\n");
-                    getchar();
-            	}*/
-            	//phrase1len=strlen(phrase1);
             	counter1++;
-            	//memmove(phrase, phrase+2, strlen(phrase));
-                //printf("i am here\n");
-            	/*char* result;
-                result=new_search(Trie,phrase1,hk);
-                printf("%s",result);
-                printf("\n");
-                if(strcmp(result,"-1"))
-                {
-                	free(result);
-                    result=NULL;
-                }*/
-                //printf("i am here\n");
                 sprintf(job->job_name,"QD");
                 if(job->job_work==NULL)
                 {
@@ -202,8 +174,7 @@ int main(int argc, char *argv[])
                         strcpy(job->job_work,phrase1);
                     }
                 }
-                //printf("past\n");
-                submit_job(sch,job,question_counter,current_version);
+                submit_job(sch,job,question_counter,current_version);//vazoume tin erotisi ston job_scheduler
                 question_counter=question_counter+1;
             }
             else if(phrase[0]=='F')
@@ -212,8 +183,6 @@ int main(int argc, char *argv[])
             	char *phrase1;
             	phrase1=strtok_r(phrase," ",&phrase1_progress);
             	phrase1=strtok_r(NULL,"",&phrase1_progress);
-            	//memmove(phrase, phrase+2, strlen(phrase));
-                //findk(hk,phrase1);
                 char **buffer;
                 buffer=malloc(question_counter*sizeof(char *));
 				int j;
@@ -222,38 +191,33 @@ int main(int argc, char *argv[])
                     temp[j].buffer=buffer;
                     temp[j].flagslen=question_counter;
                 }
-                //printf("i am here1.4 question_counter %d\n",question_counter);
-               // printjobs(sch);
-                if(question_counter!=0)
+                if(question_counter!=0)//an den exoun erotithei Q min mpeis sta threads
                 {
-                    execute_all_jobs(sch,temp,buffer);
+                    execute_all_jobs(sch,temp,buffer);//ektelese tis douleies sto buffer
                     counter1=0;
-                    wait_all_tasks_finish(sch);
+                    wait_all_tasks_finish(sch);//perimene mexri na ektelestoun oi douleies sotn buffer
                 }
-                //printf("i am here1.5\n");
-              //  printjobs(sch);
-                reset_queue(sch->q);
+                reset_queue(sch->q);//arxikopoiei ton buffer gia tin epomeni epanalipsi
             	int k;
             	k=0;
             	for(k=0;k<question_counter;k++)
             	{
-                    printf("%s\n",buffer[k]);
+                  printf("%s\n",buffer[k]);
             	}
             	for(k=0;k<question_counter;k++)
             	{
                     free(buffer[k]);
             	}
                 free(buffer);
-            	merge_everything(hk,thread_number);
+            	merge_everything(hk,thread_number);//ennonei ola ta topk apo ola ta thread
                 findk(hk[0],phrase1);
                 question_counter=0;
                 //clean_up_hash(Trie,current_version); //cleanup
-                //printf("i am here1\n");
                 //delete_threads(sch);
             }
             else if(phrase[0]=='D')
             {
-             	if(prev_current_version==0)
+             	if(prev_current_version==0)				//h sunthiki auth elenxei oti prin aukshsoume to current version prepei prwta na exei mpei toulaxiston 1 question//
              	{
              		current_version++;
              	}
@@ -262,15 +226,7 @@ int main(int argc, char *argv[])
             	char *phrase1;
             	phrase1=strtok_r(phrase," ",&phrase1_progress);
             	phrase1=strtok_r(NULL,"",&phrase1_progress);
-            	//memmove(phrase, phrase+2, strlen(phrase));
-                /*if(delete_ngram_hash(Trie,phrase1)!=1)
-                {
-                    printf("Error in delete\n");
-                }*/
-                if(delete_ngram_hash(Trie,phrase1,current_version)!=1)
-                {
-                    //printf("Error in delete\n");
-                }
+                delete_ngram_hash(Trie,phrase1,current_version);
             }
             else if(phrase[0]=='A')
             {
@@ -283,18 +239,13 @@ int main(int argc, char *argv[])
             	char *phrase1;
             	phrase1=strtok_r(phrase," ",&phrase1_progress);
             	phrase1=strtok_r(NULL,"",&phrase1_progress);
-            	//memmove(phrase, phrase+2, strlen(phrase));
-                //insert_ngram_hash(Trie,phrase1);
                 insert_ngram_hash(Trie,phrase1,current_version);
             }
-            //insert_ngram_hash(Trie,phrase);
             free(phrase);
             phrase=NULL;
             if(c==EOF) break;
             free(job);
-            //printf("i am here1.1\n");
         }
-        //printf("i am here2\n");
         free(choice);
         choice=NULL;
         fclose(init_f);
@@ -349,10 +300,7 @@ int main(int argc, char *argv[])
                 phrase=realloc(phrase,phrase_size*sizeof(char));
             }
             phrase[counter]='\0';
-            //printf("i am here1\n");
-            //printf("%s first letter %c\n",phrase,phrase[0]);
             st_insert_ngram_hash(Trie,phrase);
-            //printf("i am here2\n");
             free(phrase);
             phrase=NULL;
             if(c==EOF) break;
@@ -360,35 +308,21 @@ int main(int argc, char *argv[])
 
         compress_hash(Trie);
         char c[1000000];
-        thread_param *temp;
-        //temp=malloc(thread_number*sizeof(thread_param));
-        //printf("i am here2\n");
-        Job_Scheduler* sch=initialize_scheduler(thread_number,Trie,hk,0,&temp);
-        //printf("i am here3\n");
-        // return 1;
-        int question_counter=0,top_counter=0,counter=0;
-        //execute_all_jobs(sch,Trie,hk);
-
+        thread_param *temp;//domi gia na perasoume ta orismata sta threads
+        Job_Scheduler* sch=initialize_scheduler(thread_number,Trie,hk,0,&temp);//arxikopoiei ton job_scheduler kai ta threads
+        int question_counter=0,counter=0;
         while(1)
         {
-            //printf("i am here\n");
             Job *job=malloc(sizeof(Job));
             job->job_work=NULL;
         	memset(c,0,1000000);
         	if(fscanf(query_f,"%[^\n]",c)!=1)
         	{
-        		//printf("axi allo");
         		free(job);
         		break;
         	}
-
-        	//printf("c=%s\n",c);
-        	//printf("c=%c\n",c[0]);
-        	//getchar();
         	if(c[0]=='Q')
         	{
-                //printf("%s\n",c);
-        		//printf("mpika\n");
         		sprintf(job->job_name,"QS");
             	memmove(c, c+2, strlen(c));
         		if(job->job_work==NULL)
@@ -396,15 +330,9 @@ int main(int argc, char *argv[])
         			job->job_work=malloc(strlen(c)+1);
         			strcpy(job->job_work,c);
         		}
-        		//printf("%s\n",c);
-                //job->job_fun_st=static_search;
-                //job->job_fun_dy=NULL;
-        		//printf("sumbit %d\n",question_counter);
-        		//printf("i am here1\n");
-        		submit_job(sch,job,question_counter,0);
+        		submit_job(sch,job,question_counter,0);//prosthetei tin erotisei ston buffer
         		counter++;
                 question_counter++;
-                //printf("question_counter %d\n",question_counter);
         	}
             if(c[0]=='F')
             {
@@ -416,22 +344,18 @@ int main(int argc, char *argv[])
                     temp[j].buffer=buffer;
                     temp[j].flagslen=question_counter;
                 }
-                //printf("i am here\n");
-				//thread_param *temp;
-                //printjobs(sch);
-                if(question_counter!=0)
+                if(question_counter!=0)//an den exoun erotithei Q tote min mpeis sta threads
                 {
-                    execute_all_jobs(sch,temp,buffer);
+                    execute_all_jobs(sch,temp,buffer);//ektelese tin douleies pou uparxoun ston buffer
                     counter=0;
-                    wait_all_tasks_finish(sch);
+                    wait_all_tasks_finish(sch);//perimene mexri o buffer na teleiosei tis douleies
                 }
-		        reset_queue(sch->q);
-               // printjobs(sch);
+		        reset_queue(sch->q);//arxikopoiise ton Q gia tin epomeni ripi
             	int k;
             	k=0;
             	for(k=0;k<question_counter;k++)
             	{
-                    printf("%s\n",buffer[k]);
+                   printf("%s\n",buffer[k]);
             	}
             	for(k=0;k<question_counter;k++)
             	{
@@ -440,7 +364,7 @@ int main(int argc, char *argv[])
             	question_counter=0;
             	free(buffer);
             	memmove(c, c+2, strlen(c));
-            	merge_everything(hk,thread_number);
+            	merge_everything(hk,thread_number);//enose ta topk ton threads
                 findk(hk[0],c);
             }
             fgetc(query_f);

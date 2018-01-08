@@ -7,8 +7,8 @@
 #include <stdint.h>
 #include "fnv.h"
 #include <inttypes.h>
-#define VECTOR_SIZE 5000
-#define HASH_NUMBER 10
+#define VECTOR_SIZE 15000
+#define HASH_NUMBER 30
 
 int the_counter=0;
 int for_counter=0;
@@ -16,10 +16,8 @@ unsigned long hash_fun(unsigned char *str) //djb2
 {
     unsigned long hash = 5381;
     int c;
-
     while (c = *str++)
         hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-
     return hash;
 }
 hash_trie* init_hash_trie()//initialization of hash_trie
@@ -31,7 +29,6 @@ hash_trie* init_hash_trie()//initialization of hash_trie
     temp->round=10;
     temp->bucket=malloc(temp->bucket_num*sizeof(Index *));
     int i;
-
     i=0;
     for(i=0;i<temp->bucket_num;i++)
         temp->bucket[i]=init_trie();//initializion for every bucket
@@ -45,7 +42,6 @@ Index* init_trie()
 	trie->root = malloc(trie->root_size * sizeof(trie_node));
 	trie->root_num = 0;
 	return trie;
-
 }
 trie_node* create_trie_node() {
 	trie_node* node;
@@ -441,7 +437,7 @@ void insert_node(trie_node* node,char* phrase,int current_version)
             }
             node->child_num++;
             node->children[node->child_num-1]=create_trie_node();
-            node->children[node->child_num-1]->a_version=current_version;
+            node->children[node->child_num-1]->a_version=current_version;		//arxikopoioume to a version me to current version kai to d me 0//
             node->children[node->child_num-1]->d_version=0;
             if(strlen(str)<=50)
             {
@@ -542,16 +538,7 @@ int delete_ngram(Index* indx,char *phrase,int current_version)// DAIGRADFEI ENA 
             {
                 if(indx->root[found].child_num==0)//AN DEN EXEI PAIDIA TOTE APLA TON DIAGRAFEI
                 {
-                    indx->root[found].d_version=current_version;
-                	/*if(indx->root[found].word_flag==1)
-                	{
-                        free(indx->root[found].word);
-                        indx->root[found].word=NULL;
-                	}
-					free(indx->root[found].children);
-					indx->root[found].children=NULL;
-                    memmove(indx->root + found,indx->root+found+1,(indx->root_num-found-1)*sizeof(trie_node));
-                    indx->root_num=indx->root_num-1;*/
+                    indx->root[found].d_version=current_version;  //to version pairnei thn timh tou current version//
                     return 1;
                 }
                 else//AN EXEI PAIDIA APLA TON KANEI TO TELIKO KOMVO MH TELIKO
@@ -577,15 +564,6 @@ int delete_ngram(Index* indx,char *phrase,int current_version)// DAIGRADFEI ENA 
                     if(indx->root[found].child_num==0)//AN DEN EXEI PAIDIA TOTE TON DIAGRAFOYME
                     {
 						indx->root[found].d_version=current_version;
-                    	/*if(indx->root[found].word_flag==1)
-                    	{
-                            free(indx->root[found].word);
-                            indx->root[found].word=NULL;
-                    	}
-						free(indx->root[found].children);
-						indx->root[found].children=NULL;
-                        memmove(indx->root + found,indx->root+found+1,(indx->root_num-found-1)*sizeof(trie_node));
-                        indx->root_num=indx->root_num-1;*/
                         return 1;
                     }
                     else//AN APISTREPSEI 1 SHMAINEI OTI DEN MPORESE NA DIAGRAPSEI OLOYS TOY KOMVOYS TWN ALLWN LEKSEWN ARA APLA EPISTREFEI POS EGINE EPITYXWN H DIAGRAFH
@@ -656,17 +634,6 @@ int delete_node(trie_node *node,char *phrase,int current_version)//VOHTHITIKH SY
                 if(temp[i]->children[where[i]]->child_num==0)//AN DEN EXEI PAIDIA TON DIAGRAFOYME
                 {
                     temp[i]->children[where[i]]->d_version=current_version;
-                	/*if(temp[i]->children[where[i]]->word_flag==1)
-                	{
-                        free(temp[i]->children[where[i]]->word);
-                        temp[i]->children[where[i]]->word=NULL;
-                	}
-					free(temp[i]->children[where[i]]->children);
-					temp[i]->children[where[i]]->children=NULL;
-                    free(temp[i]->children[where[i]]);
-                    temp[i]->children[where[i]]=NULL;
-                    memmove(temp[i]->children + where[i],temp[i]->children+where[i]+1,(temp[i]->child_num-where[i]-1)*sizeof(trie_node *));
-                    temp[i]->child_num=temp[i]->child_num-1;*/
                 }
                 else//AN EXEI APLA TON KANOYME MH TELIKO
                 {
@@ -692,17 +659,6 @@ int delete_node(trie_node *node,char *phrase,int current_version)//VOHTHITIKH SY
                 if(temp[i]->children[where[i]]->child_num==0)//AN DEN EXEI PAIDIA TON DIAGRAFOYME
                 {
                     temp[i]->children[where[i]]->d_version=current_version;
-                	/*if(temp[i]->children[where[i]]->word_flag==1)
-                	{
-                        free(temp[i]->children[where[i]]->word);
-                        temp[i]->children[where[i]]->word=NULL;
-                	}
-					free(temp[i]->children[where[i]]->children);
-					temp[i]->children[where[i]]->children=NULL;
-                    free(temp[i]->children[where[i]]);
-                    temp[i]->children[where[i]]=NULL;
-                    memmove(temp[i]->children + where[i],temp[i]->children+where[i]+1,(temp[i]->child_num-where[i]-1)*sizeof(trie_node *));
-                    temp[i]->child_num=temp[i]->child_num-1;*/
                 }
                 else//AN EXEI DEN KANOYME TIPOTA
                 {
@@ -775,12 +731,10 @@ char* new_search(hash_trie* ht,char *parseddata,hash_keeper *hk,int current_vers
 	bloom_vector=malloc(args->size*sizeof(char));
 	initialize_bloom_filter(args,bloom_vector);
 	Index *indx;
-    int file_stamp=0;
     int first_word=0;
     int check=-1;
     int i;
     i=0;
-    //char olda[255];
     char *parseddataprogress;
     parseddataprogress=NULL;
     char *parseddataprogress1;
@@ -791,16 +745,8 @@ char* new_search(hash_trie* ht,char *parseddata,hash_keeper *hk,int current_vers
     temp1=NULL;
     int first;
     first=0;
-    int first1;
-    first1=0;
     char *temp3;//rest phrase
-    temp3==NULL;
-    char *temp4;
-    temp4=NULL;
-    int first2;
-    first2=0;
-    int temp3len;
-    temp3len=0;
+    temp3=NULL;
     while(1)
     {
         if(first)
@@ -828,34 +774,12 @@ char* new_search(hash_trie* ht,char *parseddata,hash_keeper *hk,int current_vers
             {
             	strcpy(temp3,parseddataprogress);
             }
-            /*char *temp2;
-            char *progress;
-            if(first2)
-            {
-            	temp2=strtok_r(NULL," ",&progress);
-				strcpy(temp3,progress);
-            }
-            else if(first2==0)
-            {
-            	temp2=strtok_r(temp4," ",&progress);
-            	strcpy(temp3,progress);
-            	first2=first2+1;
-            }*/
-            //temp2=strtok_r(NULL,"",&progress);
-            //printf("progress %s\n",temp2);
-            //getchar();
-            //memmove(temp3, progress, strlen(progress));
-            //temp3=(char *)&parseddataprogress;
-            //temp3=realloc(temp3,strlen(parseddataprogress)+1);
-            //strcpy(temp3,parseddataprogress);
         }
         else if(first==0)
         {
-            //printf("\n\n%s\n",parseddata);
             if(parseddata==NULL) break;
             temp=strtok_r(parseddata," ",&parseddataprogress);
             if(temp==NULL) break;
-            //temp3=(char *)&parseddataprogress;
             if(parseddataprogress=='\0')
             {
                 if(temp3!=NULL)
@@ -868,14 +792,8 @@ char* new_search(hash_trie* ht,char *parseddata,hash_keeper *hk,int current_vers
             else
             {
 	            temp3=malloc(strlen(parseddataprogress)+1);
-	            //temp3len=strlen(parseddataprogress)+1;
 	            strcpy(temp3,parseddataprogress);
-	            //memcpy(temp3,parseddataprogress,strlen(parseddataprogress)+1);
             }
-            //temp4=malloc(strlen(parseddataprogress)+1);
-            //strcpy(temp4,parseddataprogress);
-            //printf("temp3 is %p\n",temp3);
-            //getchar();
             first=first+1;
         }
         if(temp==NULL)
@@ -887,10 +805,6 @@ char* new_search(hash_trie* ht,char *parseddata,hash_keeper *hk,int current_vers
             }
             break;
         }
-        //printf("temp is %s\n",temp);
-        //getchar();
-        //sprintf(parseddataprogress,"%p",olda);
-        //parseddataprogress1=parseddataprogress;
         phr=malloc(strlen(temp)+1);
         strcpy(phr,temp);
         int found;
@@ -904,13 +818,9 @@ char* new_search(hash_trie* ht,char *parseddata,hash_keeper *hk,int current_vers
             continue;
         }
         int flg=0;
-        if(indx->root[found].a_version>current_version || (indx->root[found].d_version<=current_version && indx->root[found].d_version!=0))
-        {
-        	//printf("1hs while\n");
-            //free(phr);
-           // phr=NULL;
-            flg=1;
-        	//continue;
+        if(indx->root[found].a_version>current_version || (indx->root[found].d_version<=current_version && indx->root[found].d_version!=0)) //an h add version einai megaluterh tou current den to theloume to ngrams//
+        {																														//to idio kai otan to d version einai mikrotero tou current//
+            flg=1;																												//otan to d version einai 0 den exei parei akoma timh//
         }
         if((indx->root[found].is_final=='Y' || indx->root[found].d_version>current_version) && flg==0)//an einai telikos komvos
         {
@@ -945,34 +855,13 @@ char* new_search(hash_trie* ht,char *parseddata,hash_keeper *hk,int current_vers
         }
         trie_node *node;
         node=&(indx->root[found]);
-        first1=0;
         temp1=strtok_r(temp3," ",&parseddataprogress1);
         while(temp1!=NULL)
         {
             found=-1;
-            int counter1=0;
-            char *phr1;
-            //temp1=strtok_r(NULL," ",&parseddataprogress1);
-            /*if(first1)
-            {
-                temp1=strtok_r(NULL," ",&parseddataprogress1);
-            }
-            else if(first1==0)
-            {
-                temp1=strtok_r(temp3," ",&parseddataprogress1);
-                first1=first1+1;
-            }*/
-            //printf("%pp\n",parseddataprogress1);
-            //if(temp1==NULL) break;
-            //printf("temp1 is %s\n",temp1);
-            //getchar();
-            //phr1=malloc(strlen(temp1)+1);
-            //strcpy(phr1,temp1);
             found=binary_search(temp1,node->children,node->child_num);//psaxnoume na doume an uparxei sto trie_node
             if(found==-1)
             {
-                //free(phr1);
-                //phr1=NULL;
                 break;
             }
             int len_phr;
@@ -982,14 +871,9 @@ char* new_search(hash_trie* ht,char *parseddata,hash_keeper *hk,int current_vers
             phr=realloc(phr,len_phr+1+len_phr1+1);
             strcat(phr," ");
             strcat(phr,temp1);
-            //printf("phr is %s\n",phr);
-            //getchar();
             if(node->children[found]->a_version>current_version || (node->children[found]->d_version<=current_version && node->children[found]->d_version!=0))
             {
-            	//printf("2h while\n");
                 node=node->children[found];
-                //free(phr1);
-                //phr1=NULL;
                 temp1=strtok_r(NULL," ",&parseddataprogress1);
             	continue;
             }
@@ -1024,14 +908,10 @@ char* new_search(hash_trie* ht,char *parseddata,hash_keeper *hk,int current_vers
                 }
             }
             node=node->children[found];
-            //free(phr1);
-            //phr1=NULL;
             temp1=strtok_r(NULL," ",&parseddataprogress1);
         }
-        //first1=0;
         free(phr);
         phr=NULL;
-        //printf("%pp\n",parseddataprogress);
     }
     if(phr!=NULL)
     {
@@ -1049,12 +929,11 @@ char* new_search(hash_trie* ht,char *parseddata,hash_keeper *hk,int current_vers
     	free(bloom_vector);
     	return "-1";
     }
-    //free(parseddataprogress);
     free(args);
     free(bloom_vector);
     return result;
 }
-void delete_trie_hash(hash_trie **ht)//diagrafei tou hash_trie
+void delete_trie_hash(hash_trie **ht)//diagrafh tou hash_trie
 {
     int j;
     for(j=0;j<(*ht)->bucket_num;j++)
@@ -1103,50 +982,12 @@ void delete_helper(trie_node *node)
         node->children[i]=NULL;
     }
 }
-/*void InsertionSort (trie_node** a, int n)
-{
-    int i, j = 0;
-    trie_node* key;
-
-    for (i = 1; i < n; j = i, i++)
-    {
-        key = a[i];
-        if(a[j]->word_flag==0 && key->word_flag==0)
-        {
-        	while (j >= 0 && strcmp(a[j]->static_word ,key->static_word)>0)
-        		j--;
-            memmove (a + (j + 2), a + (j + 1), sizeof (trie_node*) * ((i - 1) - j));
-            a[j + 1] = key;
-        }
-        else if(a[j]->word_flag==0 && key->word_flag==1)
-        {
-        	while (j >= 0 && strcmp(a[j]->static_word ,key->word)>0)
-        		j--;
-            memmove (a + (j + 2), a + (j + 1), sizeof (trie_node*) * ((i - 1) - j));
-            a[j + 1] = key;
-        }
-        else if(a[j]->word_flag==1 && key->word_flag==0)
-        {
-        	while (j >= 0 && strcmp(a[j]->word ,key->static_word)>0)
-        		j--;
-            memmove (a + (j + 2), a + (j + 1), sizeof (trie_node*) * ((i - 1) - j));
-            a[j + 1] = key;
-        }
-        else if(a[j]->word_flag==1 && key->word_flag==1)
-        {
-        	while (j >= 0 && strcmp(a[j]->word ,key->word)>0)
-        		j--;
-            memmove (a + (j + 2), a + (j + 1), sizeof (trie_node*) * ((i - 1) - j));
-            a[j + 1] = key;
-        }
-    }
-}*/
 void InsertionSort (trie_node** a, int n)
 {
     int i, j = 0;
     trie_node* key;
-
-    for (i = 1; i < n; j = i, i++) {
+    for (i = 1; i < n; j = i, i++)
+    {
         key = a[i];
         while(j>=0)
         {
@@ -1184,55 +1025,10 @@ void InsertionSort (trie_node** a, int n)
         a[j + 1] = key;
     }
 }
-/*void InsertionSort_Root (trie_node* a, int n)
-{
-    int i, j = 0;
-    trie_node key;
-
-    for (i = 1; i < n; j = i, i++) {
-        key = a[i];
-        if(a[j].word_flag==0 && key.word_flag==0)
-        {
-            while (j >= 0 && strcmp(a[j].static_word ,key.static_word)>0)
-                j--;
-            memmove (a + (j + 2), a + (j + 1), sizeof (trie_node) * ((i - 1) - j));
-            a[j + 1] = key;
-        }
-        else if(a[j].word_flag==1 && key.word_flag==0)
-        {
-            printf("i am here7\n");
-            //while (j >= 0 && strcmp(a[j].word ,key.static_word)>0)
-            //    j--;
-            while (j >= 0 && strcmp(a[j].word ,key.static_word)>0)
-            {
-                printf("---->%d %s %s %s\n",j,a[j].word,a[j].static_word,key.static_word);
-                j--;
-                printf("---->%d %s %s %s\n",j,a[j].word,a[j].static_word,key.static_word);
-            }
-            memmove (a + (j + 2), a + (j + 1), sizeof (trie_node) * ((i - 1) - j));
-            a[j + 1] = key;
-        }
-        else if(a[j].word_flag==0 && key.word_flag==1)
-        {
-            while (j >= 0 && strcmp(a[j].static_word ,key.word)>0)
-                j--;
-            memmove (a + (j + 2), a + (j + 1), sizeof (trie_node) * ((i - 1) - j));
-            a[j + 1] = key;
-        }
-        else if(a[j].word_flag==1 && key.word_flag==1)
-        {
-            while (j >= 0 && strcmp(a[j].word ,key.word)>0)
-                j--;
-            memmove (a + (j + 2), a + (j + 1), sizeof (trie_node) * ((i - 1) - j));
-            a[j + 1] = key;
-        }
-    }
-}*/
 void InsertionSort_Root (trie_node* a, int n)
 {
     int i, j = 0;
     trie_node key;
-
     for (i = 1; i < n; j = i, i++) {
         key = a[i];
         while(j>=0)
@@ -1399,7 +1195,6 @@ void findk(hash_keeper *hk,char *str)//kaleite otan paroume apo to arxeio F
         hk->bucket[i]->cnt=0;
     }
 }
-
 int binary_search_top(char* phrase,bck_elem* node,int length)//binary search gia tin domi mas
 {
 	 int  first, last, middle;
@@ -1428,7 +1223,6 @@ int binary_search_top(char* phrase,bck_elem* node,int length)//binary search gia
 	 if (first > last)
 		 return -1;
 }
-
 void initialize_hash_topk(hash_keeper **hk)//arxikopoiisi tis domis mas i opoia einai ena hash_table me linear hashing tin opoia epileksame afou exei eisaigogi O(1)
 {
     (*hk)=malloc(sizeof(hash_keeper));
@@ -1446,7 +1240,6 @@ void initialize_hash_topk(hash_keeper **hk)//arxikopoiisi tis domis mas i opoia 
         (*hk)->bucket[i]->elems=malloc((*hk)->bucket[i]->bck_size*sizeof(bck_elem));
     }
 }
-
 int insertionSort_top(bck_elem* array, int length)//insertion sort gia ta bucket
 {
    int i, j;
@@ -1468,11 +1261,8 @@ int insertionSort_top(bck_elem* array, int length)//insertion sort gia ta bucket
     }
    return j;
 }
-
 void insert_hash_topk(hash_keeper *hk,char *phrase)//eisagogi enos stoixeio stin domi(Linear Hashing)
 {
-    //printf("i am here\n");
-    //getchar();
     unsigned long md;
     md=hk->round;
     unsigned long hash_val;
@@ -1563,8 +1353,6 @@ void insert_hash_topk(hash_keeper *hk,char *phrase)//eisagogi enos stoixeio stin
         int found;
         found=-1;
         found=binary_search_top(phrase,curbck->elems,curbck->cnt);
-        int k;
-        k=0;
         if(found>=0)
         {
             curbck->elems[found].checked=curbck->elems[found].checked+1;
@@ -1588,7 +1376,6 @@ void insert_hash_topk(hash_keeper *hk,char *phrase)//eisagogi enos stoixeio stin
             insertionSort_top(curbck->elems,curbck->cnt);
             if(overflow>0)
             {
-                //md*=2;
                 bck_elem *temp_array;
                 int temp_counter;
                 temp_counter=hk->bucket[hk->pointer]->cnt;
@@ -1632,7 +1419,6 @@ void insert_hash_topk(hash_keeper *hk,char *phrase)//eisagogi enos stoixeio stin
         }
     }
 }
-
 void merge_hash_topk(hash_keeper *hk,char *phrase,int number)
 {
     unsigned long md;
@@ -1725,8 +1511,6 @@ void merge_hash_topk(hash_keeper *hk,char *phrase,int number)
         int found;
         found=-1;
         found=binary_search_top(phrase,curbck->elems,curbck->cnt);
-        int k;
-        k=0;
         if(found>=0)
         {
             curbck->elems[found].checked=curbck->elems[found].checked+number;
@@ -1750,7 +1534,6 @@ void merge_hash_topk(hash_keeper *hk,char *phrase,int number)
             insertionSort_top(curbck->elems,curbck->cnt);
             if(overflow>0)
             {
-                //md*=2;
                 bck_elem *temp_array;
                 int temp_counter;
                 temp_counter=hk->bucket[hk->pointer]->cnt;
@@ -1794,7 +1577,6 @@ void merge_hash_topk(hash_keeper *hk,char *phrase,int number)
         }
     }
 }
-
 void merge_everything(hash_keeper **hk,int tm)
 {
     int i;
@@ -1824,8 +1606,7 @@ void merge_everything(hash_keeper **hk,int tm)
         }
     }
 }
-
-void clean_up_hash(hash_trie *ht,int current_version)
+void clean_up_hash(hash_trie *ht,int current_version)//gia kathe bucket tou hash_tree kaloume tin sunartisi clean_up gia na kathatrisei to hash_trie meta tin ripi
 {
     int i;
     i=0;
@@ -1834,8 +1615,7 @@ void clean_up_hash(hash_trie *ht,int current_version)
         clean_up(ht->bucket[i],ht,current_version);
     }
 }
-
-void clean_up(Index *indx,hash_trie *ht,int current_version)
+void clean_up(Index *indx,hash_trie *ht,int current_version)//kanei clean_up to trie apo tin ripi
 {
     int i;
     i=0;
@@ -1844,15 +1624,15 @@ void clean_up(Index *indx,hash_trie *ht,int current_version)
         trie_node *temp=&(indx->root[i]);
         if(temp->is_final=='Y')
         {
-            if(temp->d_version>0)
+            if(temp->d_version>0)//ean o komvos exei diagraftei tote ton kanoume mi teliko
             {
                 temp->is_final='N';
             }
         }
         clean_up_helper(temp,ht,current_version);
-        if(temp->child_num==0)
+        if(temp->child_num==0)//an o komvos den exei paidia
         {
-            if(temp->is_final=='N')
+            if(temp->is_final=='N')//kai einai mi telikos ton diagrafoume
             {
                 if(temp->word_flag==0)
                 {
@@ -1870,8 +1650,7 @@ void clean_up(Index *indx,hash_trie *ht,int current_version)
         i++;
     }
 }
-
-void clean_up_helper(trie_node *node,hash_trie *ht,int current_version)
+void clean_up_helper(trie_node *node,hash_trie *ht,int current_version)//voithaei to clean_up me anadromi
 {
     int i;
     i=0;
@@ -1884,15 +1663,15 @@ void clean_up_helper(trie_node *node,hash_trie *ht,int current_version)
         trie_node *temp=node->children[i];
         if(temp->is_final=='Y')
         {
-            if(temp->d_version>0)
+            if(temp->d_version>0)//an o komvos exei diagraftei tote ton kanoume mi teliko
             {
                 temp->is_final='N';
             }
         }
         clean_up_helper(temp,ht,current_version);
-        if(temp->child_num==0)
+        if(temp->child_num==0)//an den exei paidia
         {
-            if(temp->is_final=='N')
+            if(temp->is_final=='N')//kai einai mi telikos diagrapse to
             {
                 if(temp->word_flag==0)
                 {
